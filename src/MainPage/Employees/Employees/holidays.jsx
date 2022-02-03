@@ -2,23 +2,23 @@ import React from 'react';
 import {Helmet} from "react-helmet";
 import {Link} from 'react-router-dom';
 import axios from "axios";
+import moment from "moment";
 
 const Holidays = () => {
 
   const [holidays, setHolidays] = React.useState({title: '', date: ''});
   const [holidaysList, setHolidaysList] = React.useState([]);
 
-  React.useEffect(() => {
-    axios.get('/api/holidays')
-      .then(res => {
-        setHolidaysList(res.data);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+  React.useEffect( () => {
+    getHolidays()
   }, []);
 
-  const addHolidayHandler = event => {
+  const getHolidays = async () => {
+      const res = await axios.get(' http://127.0.0.1:8000/api/holidays/');
+      setHolidaysList(res.data);
+  }
+
+  const addHolidayHandler = async event => {
       event.preventDefault();
       console.log(holidays);
       const weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
@@ -28,13 +28,22 @@ const Holidays = () => {
           day: weekday[day]
       }
 
-      axios.post(' http://127.0.0.1:8000/api/holidays/', holiday)
+      await axios.post(' http://127.0.0.1:8000/api/holidays/', holiday)
           .then(res => {
-              console.log(res.data);
+              setHolidaysList(res.data);
           })
           .catch(err => {
               console.log(err);
           });
+  }
+
+  const formatDate = date => {
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+      const separateDate = date.split('-');
+      const year = separateDate[0];
+      const month = months[--separateDate[1]];
+      const day = separateDate[2];
+      return `${day} ${month} ${year}`;
   }
 
     return (
@@ -76,100 +85,123 @@ const Holidays = () => {
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr className="holiday-completed">
-                                    <td>1</td>
-                                    <td>New Year</td>
-                                    <td>1 Jan 2019</td>
-                                    <td>Sunday</td>
-                                    <td/>
-                                </tr>
-                                <tr className="holiday-completed">
-                                    <td>2</td>
-                                    <td>Good Friday</td>
-                                    <td>14 Apr 2019</td>
-                                    <td>Friday</td>
-                                    <td/>
-                                </tr>
-                                <tr className="holiday-completed">
-                                    <td>3</td>
-                                    <td>May Day</td>
-                                    <td>1 May 2019</td>
-                                    <td>Monday</td>
-                                    <td className="text-center">
-                                    </td>
-                                </tr>
-                                <tr className="holiday-completed">
-                                    <td>4</td>
-                                    <td>Memorial Day</td>
-                                    <td>28 May 2019</td>
-                                    <td>Monday</td>
-                                    <td className="text-center">
-                                    </td>
-                                </tr>
-                                <tr className="holiday-completed">
-                                    <td>5</td>
-                                    <td>Ramzon</td>
-                                    <td>26 Jun 2019</td>
-                                    <td>Monday</td>
-                                    <td/>
-                                </tr>
-                                <tr className="holiday-upcoming">
-                                    <td>6</td>
-                                    <td>Bakrid</td>
-                                    <td>2 Sep 2019</td>
-                                    <td>Saturday</td>
-                                    <td className="text-right">
-                                        <div className="dropdown dropdown-action">
-                                            <a href="#" className="action-icon dropdown-toggle" data-toggle="dropdown"
-                                               aria-expanded="false"><i className="material-icons">more_vert</i></a>
-                                            <div className="dropdown-menu dropdown-menu-right">
-                                                <a className="dropdown-item" href="#" data-toggle="modal"
-                                                   data-target="#edit_holiday"><i className="fa fa-pencil m-r-5"/> Edit</a>
-                                                <a className="dropdown-item" href="#" data-toggle="modal"
-                                                   data-target="#delete_holiday"><i
-                                                    className="fa fa-trash-o m-r-5"/> Delete</a>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr className="holiday-upcoming">
-                                    <td>7</td>
-                                    <td>Deepavali</td>
-                                    <td>18 Oct 2019</td>
-                                    <td>Wednesday</td>
-                                    <td className="text-right">
-                                        <div className="dropdown dropdown-action">
-                                            <a href="#" className="action-icon dropdown-toggle" data-toggle="dropdown"
-                                               aria-expanded="false"><i className="material-icons">more_vert</i></a>
-                                            <div className="dropdown-menu dropdown-menu-right">
-                                                <a className="dropdown-item" href="#" data-toggle="modal"
-                                                   data-target="#edit_holiday"><i className="fa fa-pencil m-r-5"/> Edit</a>
-                                                <a className="dropdown-item" href="#" data-toggle="modal"
-                                                   data-target="#delete_holiday"><i
-                                                    className="fa fa-trash-o m-r-5"/> Delete</a>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr className="holiday-upcoming">
-                                    <td>8</td>
-                                    <td>Christmas</td>
-                                    <td>25 Dec 2019</td>
-                                    <td>Monday</td>
-                                    <td className="text-right">
-                                        <div className="dropdown dropdown-action">
-                                            <a href="#" className="action-icon dropdown-toggle" data-toggle="dropdown"
-                                               aria-expanded="false"><i className="material-icons">more_vert</i></a>
-                                            <div className="dropdown-menu dropdown-menu-right">
-                                                <a className="dropdown-item" href="#" data-toggle="modal"
-                                                   data-target="#edit_holiday"><i className="fa fa-pencil m-r-5"/> Edit</a>
-                                                <a className="dropdown-item" href="#" data-toggle="modal"
-                                                   data-target="#delete_holiday"><i
-                                                    className="fa fa-trash-o m-r-5"/> Delete</a>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
+                                {
+                                    holidaysList && holidaysList.length>0 && holidaysList.map((holiday,index) => (
+                                        <tr className={moment() > moment(holiday.date) ?  'holiday-completed':''} key={holiday.id}>
+                                            <td>{index++}</td>
+                                            <td>{holiday.title}</td>
+                                            <td>{formatDate(holiday.date)}</td>
+                                            <td>{holiday.day}</td>
+                                            <td className="text-right">
+                                                <div className="dropdown dropdown-action">
+                                                    <a href="#" className="action-icon dropdown-toggle" data-toggle="dropdown"
+                                                       aria-expanded="false"><i className="material-icons">more_vert</i></a>
+                                                    <div className="dropdown-menu dropdown-menu-right">
+                                                        <a className="dropdown-item" href="#" data-toggle="modal"
+                                                           data-target="#edit_holiday"><i className="fa fa-pencil m-r-5"/> Edit</a>
+                                                        <a className="dropdown-item" href="#" data-toggle="modal"
+                                                           data-target="#delete_holiday"><i
+                                                            className="fa fa-trash-o m-r-5"/> Delete</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                }
+                                {/*<tr className="holiday-completed">*/}
+                                {/*    <td>1</td>*/}
+                                {/*    <td>New Year</td>*/}
+                                {/*    <td>1 Jan 2019</td>*/}
+                                {/*    <td>Sunday</td>*/}
+                                {/*    <td/>*/}
+                                {/*</tr>*/}
+                                {/*<tr className="holiday-completed">*/}
+                                {/*    <td>2</td>*/}
+                                {/*    <td>Good Friday</td>*/}
+                                {/*    <td>14 Apr 2019</td>*/}
+                                {/*    <td>Friday</td>*/}
+                                {/*    <td/>*/}
+                                {/*</tr>*/}
+                                {/*<tr className="holiday-completed">*/}
+                                {/*    <td>3</td>*/}
+                                {/*    <td>May Day</td>*/}
+                                {/*    <td>1 May 2019</td>*/}
+                                {/*    <td>Monday</td>*/}
+                                {/*    <td className="text-center">*/}
+                                {/*    </td>*/}
+                                {/*</tr>*/}
+                                {/*<tr className="holiday-completed">*/}
+                                {/*    <td>4</td>*/}
+                                {/*    <td>Memorial Day</td>*/}
+                                {/*    <td>28 May 2019</td>*/}
+                                {/*    <td>Monday</td>*/}
+                                {/*    <td className="text-center">*/}
+                                {/*    </td>*/}
+                                {/*</tr>*/}
+                                {/*<tr className="holiday-completed">*/}
+                                {/*    <td>5</td>*/}
+                                {/*    <td>Ramzon</td>*/}
+                                {/*    <td>26 Jun 2019</td>*/}
+                                {/*    <td>Monday</td>*/}
+                                {/*    <td/>*/}
+                                {/*</tr>*/}
+                                {/*<tr className="holiday-upcoming">*/}
+                                {/*    <td>6</td>*/}
+                                {/*    <td>Bakrid</td>*/}
+                                {/*    <td>2 Sep 2019</td>*/}
+                                {/*    <td>Saturday</td>*/}
+                                {/*    <td className="text-right">*/}
+                                {/*        <div className="dropdown dropdown-action">*/}
+                                {/*            <a href="#" className="action-icon dropdown-toggle" data-toggle="dropdown"*/}
+                                {/*               aria-expanded="false"><i className="material-icons">more_vert</i></a>*/}
+                                {/*            <div className="dropdown-menu dropdown-menu-right">*/}
+                                {/*                <a className="dropdown-item" href="#" data-toggle="modal"*/}
+                                {/*                   data-target="#edit_holiday"><i className="fa fa-pencil m-r-5"/> Edit</a>*/}
+                                {/*                <a className="dropdown-item" href="#" data-toggle="modal"*/}
+                                {/*                   data-target="#delete_holiday"><i*/}
+                                {/*                    className="fa fa-trash-o m-r-5"/> Delete</a>*/}
+                                {/*            </div>*/}
+                                {/*        </div>*/}
+                                {/*    </td>*/}
+                                {/*</tr>*/}
+                                {/*<tr className="holiday-upcoming">*/}
+                                {/*    <td>7</td>*/}
+                                {/*    <td>Deepavali</td>*/}
+                                {/*    <td>18 Oct 2019</td>*/}
+                                {/*    <td>Wednesday</td>*/}
+                                {/*    <td className="text-right">*/}
+                                {/*        <div className="dropdown dropdown-action">*/}
+                                {/*            <a href="#" className="action-icon dropdown-toggle" data-toggle="dropdown"*/}
+                                {/*               aria-expanded="false"><i className="material-icons">more_vert</i></a>*/}
+                                {/*            <div className="dropdown-menu dropdown-menu-right">*/}
+                                {/*                <a className="dropdown-item" href="#" data-toggle="modal"*/}
+                                {/*                   data-target="#edit_holiday"><i className="fa fa-pencil m-r-5"/> Edit</a>*/}
+                                {/*                <a className="dropdown-item" href="#" data-toggle="modal"*/}
+                                {/*                   data-target="#delete_holiday"><i*/}
+                                {/*                    className="fa fa-trash-o m-r-5"/> Delete</a>*/}
+                                {/*            </div>*/}
+                                {/*        </div>*/}
+                                {/*    </td>*/}
+                                {/*</tr>*/}
+                                {/*<tr className="holiday-upcoming">*/}
+                                {/*    <td>8</td>*/}
+                                {/*    <td>Christmas</td>*/}
+                                {/*    <td>25 Dec 2019</td>*/}
+                                {/*    <td>Monday</td>*/}
+                                {/*    <td className="text-right">*/}
+                                {/*        <div className="dropdown dropdown-action">*/}
+                                {/*            <a href="#" className="action-icon dropdown-toggle" data-toggle="dropdown"*/}
+                                {/*               aria-expanded="false"><i className="material-icons">more_vert</i></a>*/}
+                                {/*            <div className="dropdown-menu dropdown-menu-right">*/}
+                                {/*                <a className="dropdown-item" href="#" data-toggle="modal"*/}
+                                {/*                   data-target="#edit_holiday"><i className="fa fa-pencil m-r-5"/> Edit</a>*/}
+                                {/*                <a className="dropdown-item" href="#" data-toggle="modal"*/}
+                                {/*                   data-target="#delete_holiday"><i*/}
+                                {/*                    className="fa fa-trash-o m-r-5"/> Delete</a>*/}
+                                {/*            </div>*/}
+                                {/*        </div>*/}
+                                {/*    </td>*/}
+                                {/*</tr>*/}
                                 </tbody>
                             </table>
                         </div>
