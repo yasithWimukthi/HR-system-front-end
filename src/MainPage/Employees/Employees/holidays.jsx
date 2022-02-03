@@ -8,6 +8,7 @@ const Holidays = () => {
 
   const [holidays, setHolidays] = React.useState({title: '', date: ''});
   const [holidaysList, setHolidaysList] = React.useState([]);
+  const [removeHolidayId, setRemoveHolidayId] = React.useState(undefined);
 
   React.useEffect( () => {
     getHolidays()
@@ -29,6 +30,16 @@ const Holidays = () => {
       }
 
       await axios.post(' http://127.0.0.1:8000/api/holidays/', holiday)
+          .then(res => {
+              setHolidaysList(res.data);
+          })
+          .catch(err => {
+              console.log(err);
+          });
+  }
+
+  const removeHoliday = id => {
+      axios.delete(`http://localhost:8000/api/holidays/${id}`)
           .then(res => {
               setHolidaysList(res.data);
           })
@@ -98,9 +109,9 @@ const Holidays = () => {
                                                        aria-expanded="false"><i className="material-icons">more_vert</i></a>
                                                     <div className="dropdown-menu dropdown-menu-right">
                                                         <a className="dropdown-item" href="#" data-toggle="modal"
-                                                           data-target="#edit_holiday"><i className="fa fa-pencil m-r-5"/> Edit</a>
+                                                           data-target="#edit_holiday" ><i className="fa fa-pencil m-r-5"/> Edit</a>
                                                         <a className="dropdown-item" href="#" data-toggle="modal"
-                                                           data-target="#delete_holiday"><i
+                                                           data-target="#delete_holiday" onClick={() => setRemoveHolidayId(holiday.id)}><i
                                                             className="fa fa-trash-o m-r-5"/> Delete</a>
                                                     </div>
                                                 </div>
@@ -280,10 +291,10 @@ const Holidays = () => {
                             <div className="modal-btn delete-action">
                                 <div className="row">
                                     <div className="col-6">
-                                        <a href="" className="btn btn-primary continue-btn">Delete</a>
+                                        <a href="#" className="btn btn-primary continue-btn" onClick={() => removeHoliday(removeHolidayId)}>Delete</a>
                                     </div>
                                     <div className="col-6">
-                                        <a href="" data-dismiss="modal"
+                                        <a href="#" data-dismiss="modal"
                                            className="btn btn-primary cancel-btn">Cancel</a>
                                     </div>
                                 </div>
