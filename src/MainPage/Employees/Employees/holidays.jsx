@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Helmet} from "react-helmet";
 import {Link} from 'react-router-dom';
 import axios from "axios";
@@ -6,11 +6,12 @@ import moment from "moment";
 
 const Holidays = () => {
 
-  const [holidays, setHolidays] = React.useState({title: '', date: ''});
-  const [holidaysList, setHolidaysList] = React.useState([]);
-  const [removeHolidayId, setRemoveHolidayId] = React.useState(undefined);
+  const [holidays, setHolidays] = useState({title: '', date: ''});
+  const [holidaysList, setHolidaysList] = useState([]);
+  const [removeHolidayId, setRemoveHolidayId] = useState(undefined);
+  const [editHoliday, setEditHoliday] = useState({title: '', date: '',id:null});
 
-  React.useEffect( () => {
+  useEffect( () => {
     getHolidays()
   }, []);
 
@@ -37,6 +38,25 @@ const Holidays = () => {
               console.log(err);
           });
   }
+
+    const editHolidayHandler = async event => {
+        event.preventDefault();
+        console.log(holidays);
+        const weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+        const day = new Date(editHoliday.date).getDay();
+        const holiday = {
+            ...editHoliday,
+            day: weekday[day]
+        }
+
+        await axios.post(`http://localhost:8000/api/holidays/${editHoliday.id}`, holiday)
+            .then(res => {
+                setHolidaysList(res.data);
+            })
+            .catch(err => {
+                console.log(err.message);
+            });
+    }
 
   const removeHoliday = id => {
       axios.delete(`http://localhost:8000/api/holidays/${id}`)
@@ -69,7 +89,7 @@ const Holidays = () => {
                 <div className="page-header">
                     <div className="row align-items-center">
                         <div className="col">
-                            <h3 className="page-title">Holidays 2019</h3>
+                            <h3 className="page-title">Holidays 2022</h3>
                             <ul className="breadcrumb">
                                 <li className="breadcrumb-item"><Link to="/app/main/dashboard">Dashboard</Link></li>
                                 <li className="breadcrumb-item active">Holidays</li>
@@ -104,12 +124,12 @@ const Holidays = () => {
                                             <td>{formatDate(holiday.date)}</td>
                                             <td>{holiday.day}</td>
                                             <td className="text-right">
-                                                <div className="dropdown dropdown-action">
+                                                <div className={moment() > moment(holiday.date) ?  'dropdown dropdown-action d-none':'dropdown dropdown-action'}>
                                                     <a href="#" className="action-icon dropdown-toggle" data-toggle="dropdown"
                                                        aria-expanded="false"><i className="material-icons">more_vert</i></a>
                                                     <div className="dropdown-menu dropdown-menu-right">
                                                         <a className="dropdown-item" href="#" data-toggle="modal"
-                                                           data-target="#edit_holiday" ><i className="fa fa-pencil m-r-5"/> Edit</a>
+                                                           data-target="#edit_holiday" onClick={() => setEditHoliday({title:holiday.title,date:holiday.date, id: holiday.id})}><i className="fa fa-pencil m-r-5"/> Edit</a>
                                                         <a className="dropdown-item" href="#" data-toggle="modal"
                                                            data-target="#delete_holiday" onClick={() => setRemoveHolidayId(holiday.id)}><i
                                                             className="fa fa-trash-o m-r-5"/> Delete</a>
@@ -119,100 +139,6 @@ const Holidays = () => {
                                         </tr>
                                     ))
                                 }
-                                {/*<tr className="holiday-completed">*/}
-                                {/*    <td>1</td>*/}
-                                {/*    <td>New Year</td>*/}
-                                {/*    <td>1 Jan 2019</td>*/}
-                                {/*    <td>Sunday</td>*/}
-                                {/*    <td/>*/}
-                                {/*</tr>*/}
-                                {/*<tr className="holiday-completed">*/}
-                                {/*    <td>2</td>*/}
-                                {/*    <td>Good Friday</td>*/}
-                                {/*    <td>14 Apr 2019</td>*/}
-                                {/*    <td>Friday</td>*/}
-                                {/*    <td/>*/}
-                                {/*</tr>*/}
-                                {/*<tr className="holiday-completed">*/}
-                                {/*    <td>3</td>*/}
-                                {/*    <td>May Day</td>*/}
-                                {/*    <td>1 May 2019</td>*/}
-                                {/*    <td>Monday</td>*/}
-                                {/*    <td className="text-center">*/}
-                                {/*    </td>*/}
-                                {/*</tr>*/}
-                                {/*<tr className="holiday-completed">*/}
-                                {/*    <td>4</td>*/}
-                                {/*    <td>Memorial Day</td>*/}
-                                {/*    <td>28 May 2019</td>*/}
-                                {/*    <td>Monday</td>*/}
-                                {/*    <td className="text-center">*/}
-                                {/*    </td>*/}
-                                {/*</tr>*/}
-                                {/*<tr className="holiday-completed">*/}
-                                {/*    <td>5</td>*/}
-                                {/*    <td>Ramzon</td>*/}
-                                {/*    <td>26 Jun 2019</td>*/}
-                                {/*    <td>Monday</td>*/}
-                                {/*    <td/>*/}
-                                {/*</tr>*/}
-                                {/*<tr className="holiday-upcoming">*/}
-                                {/*    <td>6</td>*/}
-                                {/*    <td>Bakrid</td>*/}
-                                {/*    <td>2 Sep 2019</td>*/}
-                                {/*    <td>Saturday</td>*/}
-                                {/*    <td className="text-right">*/}
-                                {/*        <div className="dropdown dropdown-action">*/}
-                                {/*            <a href="#" className="action-icon dropdown-toggle" data-toggle="dropdown"*/}
-                                {/*               aria-expanded="false"><i className="material-icons">more_vert</i></a>*/}
-                                {/*            <div className="dropdown-menu dropdown-menu-right">*/}
-                                {/*                <a className="dropdown-item" href="#" data-toggle="modal"*/}
-                                {/*                   data-target="#edit_holiday"><i className="fa fa-pencil m-r-5"/> Edit</a>*/}
-                                {/*                <a className="dropdown-item" href="#" data-toggle="modal"*/}
-                                {/*                   data-target="#delete_holiday"><i*/}
-                                {/*                    className="fa fa-trash-o m-r-5"/> Delete</a>*/}
-                                {/*            </div>*/}
-                                {/*        </div>*/}
-                                {/*    </td>*/}
-                                {/*</tr>*/}
-                                {/*<tr className="holiday-upcoming">*/}
-                                {/*    <td>7</td>*/}
-                                {/*    <td>Deepavali</td>*/}
-                                {/*    <td>18 Oct 2019</td>*/}
-                                {/*    <td>Wednesday</td>*/}
-                                {/*    <td className="text-right">*/}
-                                {/*        <div className="dropdown dropdown-action">*/}
-                                {/*            <a href="#" className="action-icon dropdown-toggle" data-toggle="dropdown"*/}
-                                {/*               aria-expanded="false"><i className="material-icons">more_vert</i></a>*/}
-                                {/*            <div className="dropdown-menu dropdown-menu-right">*/}
-                                {/*                <a className="dropdown-item" href="#" data-toggle="modal"*/}
-                                {/*                   data-target="#edit_holiday"><i className="fa fa-pencil m-r-5"/> Edit</a>*/}
-                                {/*                <a className="dropdown-item" href="#" data-toggle="modal"*/}
-                                {/*                   data-target="#delete_holiday"><i*/}
-                                {/*                    className="fa fa-trash-o m-r-5"/> Delete</a>*/}
-                                {/*            </div>*/}
-                                {/*        </div>*/}
-                                {/*    </td>*/}
-                                {/*</tr>*/}
-                                {/*<tr className="holiday-upcoming">*/}
-                                {/*    <td>8</td>*/}
-                                {/*    <td>Christmas</td>*/}
-                                {/*    <td>25 Dec 2019</td>*/}
-                                {/*    <td>Monday</td>*/}
-                                {/*    <td className="text-right">*/}
-                                {/*        <div className="dropdown dropdown-action">*/}
-                                {/*            <a href="#" className="action-icon dropdown-toggle" data-toggle="dropdown"*/}
-                                {/*               aria-expanded="false"><i className="material-icons">more_vert</i></a>*/}
-                                {/*            <div className="dropdown-menu dropdown-menu-right">*/}
-                                {/*                <a className="dropdown-item" href="#" data-toggle="modal"*/}
-                                {/*                   data-target="#edit_holiday"><i className="fa fa-pencil m-r-5"/> Edit</a>*/}
-                                {/*                <a className="dropdown-item" href="#" data-toggle="modal"*/}
-                                {/*                   data-target="#delete_holiday"><i*/}
-                                {/*                    className="fa fa-trash-o m-r-5"/> Delete</a>*/}
-                                {/*            </div>*/}
-                                {/*        </div>*/}
-                                {/*    </td>*/}
-                                {/*</tr>*/}
                                 </tbody>
                             </table>
                         </div>
@@ -238,7 +164,7 @@ const Holidays = () => {
                                 </div>
                                 <div className="form-group">
                                     <label>Holiday Date <span className="text-danger">*</span></label>
-                                    <div><input className="form-control datetimepicker" type="date" value={holidays.date} onChange={e=>setHolidays({...holidays,date: e.target.value})}/></div>
+                                    <div><input className="form-control datetimepicker" type="date" value={holidaysList.date} onChange={e=>setHolidays({...holidays,date: e.target.value})}/></div>
                                 </div>
                                 <div className="submit-section">
                                     <button className="btn btn-primary submit-btn">Submit</button>
@@ -260,15 +186,15 @@ const Holidays = () => {
                             </button>
                         </div>
                         <div className="modal-body">
-                            <form>
+                            <form onSubmit={editHolidayHandler}>
                                 <div className="form-group">
                                     <label>Holiday Name <span className="text-danger">*</span></label>
-                                    <input className="form-control" defaultValue="New Year" type="text"/>
+                                    <input className="form-control" defaultValue="New Year" type="text" value={editHoliday.title} onChange={e=>setEditHoliday({...editHoliday,title: e.target.value})}/>
                                 </div>
                                 <div className="form-group">
                                     <label>Holiday Date <span className="text-danger">*</span></label>
                                     <div><input className="form-control datetimepicker" defaultValue="01-01-2019"
-                                                type="date"/></div>
+                                                type="date" value={editHoliday.date} onChange={e=>setEditHoliday({...editHoliday,date: e.target.value})}/></div>
                                 </div>
                                 <div className="submit-section">
                                     <button className="btn btn-primary submit-btn">Save</button>
