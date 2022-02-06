@@ -4,7 +4,9 @@ import {Link} from 'react-router-dom';
 import axios from "axios";
 import moment from "moment";
 
-const Holidays = () => {
+import "react-datepicker/dist/react-datepicker.css";
+
+const Holidays = ({history}) => {
 
   const [holidays, setHolidays] = useState({title: '', date: ''});
   const [holidaysList, setHolidaysList] = useState([]);
@@ -22,17 +24,16 @@ const Holidays = () => {
 
   const addHolidayHandler = async event => {
       event.preventDefault();
-      console.log(holidays);
       const weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
       const day = new Date(holidays.date).getDay();
       const holiday = {
           ...holidays,
           day: weekday[day]
       }
-
       await axios.post(' http://127.0.0.1:8000/api/holidays/', holiday)
           .then(res => {
               setHolidaysList(res.data);
+              setHolidays({title: '', date: ''});
           })
           .catch(err => {
               console.log(err);
@@ -119,7 +120,7 @@ const Holidays = () => {
                                 {
                                     holidaysList && holidaysList.length>0 && holidaysList.map((holiday,index) => (
                                         <tr className={moment() > moment(holiday.date) ?  'holiday-completed':''} key={holiday.id}>
-                                            <td>{index++}</td>
+                                            <td>{++index}</td>
                                             <td>{holiday.title}</td>
                                             <td>{formatDate(holiday.date)}</td>
                                             <td>{holiday.day}</td>
@@ -147,7 +148,7 @@ const Holidays = () => {
             </div>
             {/* /Page Content */}
             {/* Add Holiday Modal */}
-            <div className="modal custom-modal fade" id="add_holiday" role="dialog">
+            <div className="modal custom-modal fade " id="add_holiday" role="dialog" >
                 <div className="modal-dialog modal-dialog-centered" role="document">
                     <div className="modal-content">
                         <div className="modal-header">
@@ -157,17 +158,17 @@ const Holidays = () => {
                             </button>
                         </div>
                         <div className="modal-body">
-                            <form onSubmit={addHolidayHandler}>
+                            <form >
                                 <div className="form-group">
                                     <label>Holiday Name <span className="text-danger">*</span></label>
                                     <input className="form-control" value={holidays.title} onChange={e=>setHolidays({...holidays,title: e.target.value})} type="text"/>
                                 </div>
                                 <div className="form-group">
                                     <label>Holiday Date <span className="text-danger">*</span></label>
-                                    <div><input className="form-control datetimepicker" type="date" value={holidaysList.date} onChange={e=>setHolidays({...holidays,date: e.target.value})}/></div>
+                                    <div><input className="form-control " type="date" value={holidays.date} onChange={e=>setHolidays({...holidays,date: e.target.value})}/></div>
                                 </div>
                                 <div className="submit-section">
-                                    <button className="btn btn-primary submit-btn">Submit</button>
+                                    <button className="btn btn-primary submit-btn" data-dismiss="modal" onClick={addHolidayHandler}>Submit</button>
                                 </div>
                             </form>
                         </div>
@@ -186,18 +187,18 @@ const Holidays = () => {
                             </button>
                         </div>
                         <div className="modal-body">
-                            <form onSubmit={editHolidayHandler}>
+                            <form >
                                 <div className="form-group">
                                     <label>Holiday Name <span className="text-danger">*</span></label>
                                     <input className="form-control" defaultValue="New Year" type="text" value={editHoliday.title} onChange={e=>setEditHoliday({...editHoliday,title: e.target.value})}/>
                                 </div>
                                 <div className="form-group">
                                     <label>Holiday Date <span className="text-danger">*</span></label>
-                                    <div><input className="form-control datetimepicker" defaultValue="01-01-2019"
+                                    <div><input className="form-control"
                                                 type="date" value={editHoliday.date} onChange={e=>setEditHoliday({...editHoliday,date: e.target.value})}/></div>
                                 </div>
                                 <div className="submit-section">
-                                    <button className="btn btn-primary submit-btn">Save</button>
+                                    <button type="submit" data-dismiss="modal"  className="btn btn-primary submit-btn" onClick={editHolidayHandler}>Save</button>
                                 </div>
                             </form>
                         </div>
@@ -206,7 +207,7 @@ const Holidays = () => {
             </div>
             {/* /Edit Holiday Modal */}
             {/* Delete Holiday Modal */}
-            <div className="modal custom-modal fade" id="delete_holiday" role="dialog">
+            <div className='modal custom-modal fade' id="delete_holiday" role="dialog">
                 <div className="modal-dialog modal-dialog-centered">
                     <div className="modal-content">
                         <div className="modal-body">
@@ -217,11 +218,11 @@ const Holidays = () => {
                             <div className="modal-btn delete-action">
                                 <div className="row">
                                     <div className="col-6">
-                                        <a href="#" className="btn btn-primary continue-btn" onClick={() => removeHoliday(removeHolidayId)}>Delete</a>
+                                        <a href="#" data-dismiss="modal" className="btn btn-primary continue-btn" onClick={() => removeHoliday(removeHolidayId)}>Delete</a>
                                     </div>
                                     <div className="col-6">
-                                        <a href="#" data-dismiss="modal"
-                                           className="btn btn-primary cancel-btn">Cancel</a>
+                                        <a href="#"
+                                           className="btn btn-primary cancel-btn" >Cancel</a>
                                     </div>
                                 </div>
                             </div>
