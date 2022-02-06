@@ -3,7 +3,6 @@ import {Helmet} from "react-helmet";
 import {Link} from 'react-router-dom';
 import axios from "axios";
 import moment from "moment";
-import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -13,7 +12,6 @@ const Holidays = ({history}) => {
   const [holidaysList, setHolidaysList] = useState([]);
   const [removeHolidayId, setRemoveHolidayId] = useState(undefined);
   const [editHoliday, setEditHoliday] = useState({title: '', date: '',id:null});
-  const [closeModal,setCloseModal] = useState(false);
 
   useEffect( () => {
     getHolidays()
@@ -150,7 +148,7 @@ const Holidays = ({history}) => {
             </div>
             {/* /Page Content */}
             {/* Add Holiday Modal */}
-            <div className="modal custom-modal fade" id="add_holiday" role="dialog">
+            <div className="modal custom-modal fade " id="add_holiday" role="dialog" >
                 <div className="modal-dialog modal-dialog-centered" role="document">
                     <div className="modal-content">
                         <div className="modal-header">
@@ -160,7 +158,7 @@ const Holidays = ({history}) => {
                             </button>
                         </div>
                         <div className="modal-body">
-                            <form onSubmit={addHolidayHandler}>
+                            <form >
                                 <div className="form-group">
                                     <label>Holiday Name <span className="text-danger">*</span></label>
                                     <input className="form-control" value={holidays.title} onChange={e=>setHolidays({...holidays,title: e.target.value})} type="text"/>
@@ -168,11 +166,9 @@ const Holidays = ({history}) => {
                                 <div className="form-group">
                                     <label>Holiday Date <span className="text-danger">*</span></label>
                                     <div><input className="form-control " type="date" value={holidays.date} onChange={e=>setHolidays({...holidays,date: e.target.value})}/></div>
-                                    {/*<div><input className="form-control datetimepicker" type="date" value={holidays.date} onChange={e=>setHolidays({...holidays,date: e.value})}/></div>*/}
-                                    {/*<DatePicker className="form-control"  selected={holidays.date} onChange={(date) => setHolidays({...holidays,date})}/>*/}
                                 </div>
                                 <div className="submit-section">
-                                    <button className="btn btn-primary submit-btn">Submit</button>
+                                    <button className="btn btn-primary submit-btn" data-dismiss="modal" onClick={addHolidayHandler}>Submit</button>
                                 </div>
                             </form>
                         </div>
@@ -191,7 +187,7 @@ const Holidays = ({history}) => {
                             </button>
                         </div>
                         <div className="modal-body">
-                            <form onSubmit={editHolidayHandler}>
+                            <form >
                                 <div className="form-group">
                                     <label>Holiday Name <span className="text-danger">*</span></label>
                                     <input className="form-control" defaultValue="New Year" type="text" value={editHoliday.title} onChange={e=>setEditHoliday({...editHoliday,title: e.target.value})}/>
@@ -202,7 +198,7 @@ const Holidays = ({history}) => {
                                                 type="date" value={editHoliday.date} onChange={e=>setEditHoliday({...editHoliday,date: e.target.value})}/></div>
                                 </div>
                                 <div className="submit-section">
-                                    <button type="submit"  className="btn btn-primary submit-btn">Save</button>
+                                    <button type="submit" data-dismiss="modal"  className="btn btn-primary submit-btn" onClick={editHolidayHandler}>Save</button>
                                 </div>
                             </form>
                         </div>
@@ -225,7 +221,7 @@ const Holidays = ({history}) => {
                                         <a href="#" data-dismiss="modal" className="btn btn-primary continue-btn" onClick={() => removeHoliday(removeHolidayId)}>Delete</a>
                                     </div>
                                     <div className="col-6">
-                                        <a href="#" data-dismiss="modal"
+                                        <a href="#"
                                            className="btn btn-primary cancel-btn" >Cancel</a>
                                     </div>
                                 </div>
