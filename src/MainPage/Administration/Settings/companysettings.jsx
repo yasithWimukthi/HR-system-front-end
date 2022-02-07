@@ -39,6 +39,7 @@ const Settings = () => {
         fax:'',
         websiteUrl:''
     });
+    const [removeCompanyId, setRemoveCompanyId] = useState(null);
 
     useEffect(() => {
         getCompanyList();
@@ -82,6 +83,16 @@ const Settings = () => {
             })
             .catch(err => {
                 console.log(err.message);
+            });
+    }
+
+    const removeCompany = id => {
+        axios.delete(`http://localhost:8000/api/companies/${id}`)
+            .then(res => {
+                setCompanyList(res.data);
+            })
+            .catch(err => {
+                console.log(err);
             });
     }
 
@@ -176,7 +187,7 @@ const Settings = () => {
                                                         <a className="dropdown-item" href="#" data-toggle="modal"
                                                            data-target="#edit_company"  onClick={() => onClickEditCompany(company)}><i className="fa fa-pencil m-r-5" /> Edit</a>
                                                         <a className="dropdown-item" href="#" data-toggle="modal"
-                                                           data-target="#delete_company" ><i
+                                                           data-target="#delete_company"  onClick={() => setRemoveCompanyId(company.id)}><i
                                                             className="fa fa-trash-o m-r-5"/> Delete</a>
                                                     </div>
                                                 </div>
@@ -494,7 +505,7 @@ const Settings = () => {
                                 <div className="row">
                                     <div className="col-6">
                                         <a href="#" data-dismiss="modal"
-                                           className="btn btn-primary continue-btn">Delete</a>
+                                           className="btn btn-primary continue-btn" onClick={() => removeCompany(removeCompanyId)}>Delete</a>
                                     </div>
                                     <div className="col-6">
                                         <a href="#"
