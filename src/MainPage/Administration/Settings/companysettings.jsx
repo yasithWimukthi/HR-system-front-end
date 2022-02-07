@@ -6,7 +6,6 @@ import React, {useEffect, useState} from 'react';
 import {Helmet} from "react-helmet";
 import {Link} from "react-router-dom";
 import axios from "axios";
-import moment from "moment";
 
 const Settings = () => {
 
@@ -25,6 +24,21 @@ const Settings = () => {
         websiteUrl:''
     })
     const [companyList, setCompanyList] = useState([]);
+    const [selectedCompany, setSelectedCompany] = useState({
+        id:null,
+        country : '',
+        companyName : '',
+        contactPerson : '',
+        address:'',
+        city:'',
+        state:'',
+        postalCode:'',
+        email:'',
+        phoneNumber:'',
+        mobileNumber:'',
+        fax:'',
+        websiteUrl:''
+    });
 
     useEffect(() => {
         getCompanyList();
@@ -58,6 +72,35 @@ const Settings = () => {
             .catch(err => {
                 console.log(err);
             });
+    }
+
+    const editCompanyHandler = async e =>{
+        e.preventDefault();
+        await axios.post(`http://localhost:8000/api/companies/${selectedCompany.id}`, selectedCompany)
+            .then(res => {
+                setCompanyList(res.data);
+            })
+            .catch(err => {
+                console.log(err.message);
+            });
+    }
+
+    const onClickEditCompany = (company) => {
+        setSelectedCompany({
+            id:company.id,
+            country : company.country,
+            companyName : company.companyName,
+            contactPerson : company.contactPerson,
+            address:company.address,
+            city:company.city,
+            state:company.state,
+            postalCode:company.postalCode,
+            email:company.email,
+            phoneNumber:company.phoneNumber,
+            mobileNumber:company.mobileNumber,
+            fax:company.fax,
+            websiteUrl:company.websiteUrl
+        });
     }
 
     return (
@@ -131,7 +174,7 @@ const Settings = () => {
                                                        aria-expanded="false"><i className="material-icons">more_vert</i></a>
                                                     <div className="dropdown-menu dropdown-menu-right">
                                                         <a className="dropdown-item" href="#" data-toggle="modal"
-                                                           data-target="#edit_company" ><i className="fa fa-pencil m-r-5"/> Edit</a>
+                                                           data-target="#edit_company"  onClick={() => onClickEditCompany(company)}><i className="fa fa-pencil m-r-5" /> Edit</a>
                                                         <a className="dropdown-item" href="#" data-toggle="modal"
                                                            data-target="#delete_company" ><i
                                                             className="fa fa-trash-o m-r-5"/> Delete</a>
@@ -317,14 +360,20 @@ const Settings = () => {
                                     <div className="col-sm-6">
                                         <div className="form-group">
                                             <label>Company Name <span className="text-danger">*</span></label>
-                                            <input className="form-control" type="text"
-                                                   defaultValue="Dreamguy's Technologies"/>
+                                            <input className="form-control"
+                                                   type="text"
+                                                   value={selectedCompany.companyName}
+                                                   onChange={e => setSelectedCompany({...selectedCompany,companyName:e.target.value})}
+                                            />
                                         </div>
                                     </div>
                                     <div className="col-sm-6">
                                         <div className="form-group">
                                             <label>Contact Person</label>
-                                            <input className="form-control " defaultValue="Daniel Porter" type="text"/>
+                                            <input className="form-control "
+                                                   value={selectedCompany.contactPerson}
+                                                   onChange={e => setSelectedCompany({...selectedCompany,contactPerson:e.target.value})}
+                                                   type="text"/>
                                         </div>
                                     </div>
                                 </div>
@@ -333,30 +382,36 @@ const Settings = () => {
                                         <div className="form-group">
                                             <label>Address</label>
                                             <input className="form-control "
-                                                   defaultValue="3864 Quiet Valley Lane, Sherman Oaks, CA, 91403"
+                                                   value={selectedCompany.address}
+                                                   onChange={e => setSelectedCompany({...selectedCompany,address:e.target.value})}
                                                    type="text"/>
                                         </div>
                                     </div>
                                     <div className="col-sm-6 col-md-6 col-lg-3">
                                         <div className="form-group">
                                             <label>City</label>
-                                            <input className="form-control" defaultValue="Sherman Oaks" type="text"/>
+                                            <input className="form-control"
+                                                   value={selectedCompany.city}
+                                                   onChange={e => setSelectedCompany({...selectedCompany,city:e.target.value})}
+                                                   type="text"/>
                                         </div>
                                     </div>
                                     <div className="col-sm-6 col-md-6 col-lg-3">
                                         <div className="form-group">
                                             <label>State/Province</label>
-                                            <select className="form-control select">
-                                                <option>California</option>
-                                                <option>Alaska</option>
-                                                <option>Alabama</option>
-                                            </select>
+                                            <input className="form-control" type="text"
+                                                   value={selectedCompany.state}
+                                                   onChange={e => setSelectedCompany({...selectedCompany,state:e.target.value})}
+                                            />
                                         </div>
                                     </div>
                                     <div className="col-sm-6 col-md-6 col-lg-3">
                                         <div className="form-group">
                                             <label>Postal Code</label>
-                                            <input className="form-control" defaultValue={91403} type="text"/>
+                                            <input className="form-control"
+                                                   value={selectedCompany.postalCode}
+                                                   onChange={e => setSelectedCompany({...selectedCompany,postalCode:e.target.value})}
+                                                   type="text"/>
                                         </div>
                                     </div>
                                 </div>
@@ -364,14 +419,19 @@ const Settings = () => {
                                     <div className="col-sm-6">
                                         <div className="form-group">
                                             <label>Email</label>
-                                            <input className="form-control" defaultValue="danielporter@example.com"
+                                            <input className="form-control"
+                                                   value={selectedCompany.email}
+                                                   onChange={e => setSelectedCompany({...selectedCompany,email:e.target.value})}
                                                    type="email"/>
                                         </div>
                                     </div>
                                     <div className="col-sm-6">
                                         <div className="form-group">
                                             <label>Phone Number</label>
-                                            <input className="form-control" defaultValue="818-978-7102" type="text"/>
+                                            <input className="form-control"
+                                                   value={selectedCompany.phoneNumber}
+                                                   onChange={e => setSelectedCompany({...selectedCompany,phoneNumber:e.target.value})}
+                                                   type="text"/>
                                         </div>
                                     </div>
                                 </div>
@@ -379,13 +439,19 @@ const Settings = () => {
                                     <div className="col-sm-6">
                                         <div className="form-group">
                                             <label>Mobile Number</label>
-                                            <input className="form-control" defaultValue="818-635-5579" type="text"/>
+                                            <input className="form-control"
+                                                   value={selectedCompany.mobileNumber}
+                                                   onChange={e => setSelectedCompany({...selectedCompany,mobileNumber:e.target.value})}
+                                                   type="text"/>
                                         </div>
                                     </div>
                                     <div className="col-sm-6">
                                         <div className="form-group">
                                             <label>Fax</label>
-                                            <input className="form-control" defaultValue="818-978-7102" type="text"/>
+                                            <input className="form-control"
+                                                   value={selectedCompany.fax}
+                                                   onChange={e => setSelectedCompany({...selectedCompany,fax:e.target.value})}
+                                                   type="text"/>
                                         </div>
                                     </div>
                                 </div>
@@ -393,13 +459,21 @@ const Settings = () => {
                                     <div className="col-sm-12">
                                         <div className="form-group">
                                             <label>Website Url</label>
-                                            <input className="form-control" defaultValue="https://www.example.com"
+                                            <input className="form-control"
+                                                   value={selectedCompany.websiteUrl}
+                                                   onChange={e => setSelectedCompany({...selectedCompany,websiteUrl:e.target.value})}
                                                    type="text"/>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="submit-section">
-                                    <button className="btn btn-primary submit-btn">Save</button>
+                                    <button
+                                        className="btn btn-primary submit-btn"
+                                        data-dismiss="modal"
+                                        type="submit"
+                                        onClick={editCompanyHandler}
+                                    >
+                                        Save</button>
                                 </div>
                             </form>
                         </div>
