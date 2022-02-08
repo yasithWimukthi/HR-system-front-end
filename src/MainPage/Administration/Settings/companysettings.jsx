@@ -6,6 +6,7 @@ import React, {useEffect, useState} from 'react';
 import {Helmet} from "react-helmet";
 import {Link} from "react-router-dom";
 import axios from "axios";
+import '../../../assets/css/companySettings.css';
 
 const Settings = () => {
 
@@ -52,11 +53,12 @@ const Settings = () => {
 
     const addCompanyHandler = async e => {
         e.preventDefault();
+        console.log(company);
         await axios.post(' http://127.0.0.1:8000/api/companies/', company)
             .then(res => {
                 setCompanyList(res.data);
                 setCompany({
-                    country : 'USA',
+                    country : '',
                     companyName : '',
                     contactPerson : '',
                     address:'',
@@ -214,16 +216,16 @@ const Settings = () => {
                         <div className="modal-body">
                             <form>
                                 <div className="row">
-                                    <div className="col-sm-12 col-md-12 col-lg-12">
+                                    <div className="col-sm-4 col-md-4 col-lg-4">
                                         <div className="form-group" >
                                             <label>Country</label>
-                                            <select className="form-control select" defaultValue={company.country} >
+                                            <select className="form-control select" value={company.country}  onChange={e => setCompany({...company,country: e.target.value})}>
                                                 <option value="USA">USA</option>
                                                 <option value="United Kingdom">United Kingdom</option>
                                             </select>
                                         </div>
                                     </div>
-                                    <div className="col-sm-6">
+                                    <div className="col-sm-4">
                                         <div className="form-group">
                                             <label>Company Name <span className="text-danger">*</span></label>
                                             <input className="form-control" type="text"
@@ -231,7 +233,7 @@ const Settings = () => {
                                                    onChange={e => setCompany({...company,companyName:e.target.value})}/>
                                         </div>
                                     </div>
-                                    <div className="col-sm-6">
+                                    <div className="col-sm-4">
                                         <div className="form-group">
                                             <label>Contact Person</label>
                                             <input className="form-control "
@@ -242,7 +244,7 @@ const Settings = () => {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-sm-12">
+                                    <div className="col-sm-6">
                                         <div className="form-group">
                                             <label>Address</label>
                                             <input className="form-control "
@@ -252,7 +254,7 @@ const Settings = () => {
                                             />
                                         </div>
                                     </div>
-                                    <div className="col-sm-6 col-md-6 col-lg-3">
+                                    <div className="col-sm-4 col-md-4 col-lg-4">
                                         <div className="form-group">
                                             <label>City</label>
                                             <input className="form-control"
@@ -261,15 +263,15 @@ const Settings = () => {
                                                    type="text"/>
                                         </div>
                                     </div>
-                                    <div className="col-sm-6 col-md-6 col-lg-3">
+                                    <div className="col-sm-4 col-md-4 col-lg-4">
                                         <div className="form-group">
                                             <label>State/Province</label>
                                             <input className="form-control" type="text"
                                                    value={company.state}
-                                                   onChange={e => setCompany({...company,state:e.target.value})}/>
+                                                    onChange={e => setCompany({...company,state:e.target.value})}/>
                                         </div>
                                     </div>
-                                    <div className="col-sm-6 col-md-6 col-lg-3">
+                                    <div className="col-sm-4 col-md-4 col-lg-4">
                                         <div className="form-group">
                                             <label>Postal Code</label>
                                             <input className="form-control"
@@ -279,9 +281,7 @@ const Settings = () => {
                                             />
                                         </div>
                                     </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-sm-6">
+                                    <div className="col-sm-4">
                                         <div className="form-group">
                                             <label>Email</label>
                                             <input className="form-control"
@@ -291,7 +291,9 @@ const Settings = () => {
                                             />
                                         </div>
                                     </div>
-                                    <div className="col-sm-6">
+                                </div>
+                                <div className="row">
+                                    <div className="col-sm-4">
                                         <div className="form-group">
                                             <label>Phone Number</label>
                                             <input className="form-control"
@@ -301,9 +303,7 @@ const Settings = () => {
                                             />
                                         </div>
                                     </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-sm-6">
+                                    <div className="col-sm-4">
                                         <div className="form-group">
                                             <label>Mobile Number</label>
                                             <input
@@ -314,7 +314,7 @@ const Settings = () => {
                                             />
                                         </div>
                                     </div>
-                                    <div className="col-sm-6">
+                                    <div className="col-sm-4">
                                         <div className="form-group">
                                             <label>Fax</label>
                                             <input className="form-control"
@@ -326,7 +326,7 @@ const Settings = () => {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-sm-12">
+                                    <div className="col-sm-4">
                                         <div className="form-group">
                                             <label>Website Url</label>
                                             <input className="form-control"
@@ -362,9 +362,9 @@ const Settings = () => {
                                     <div className="col-sm-12 col-md-12 col-lg-12">
                                         <div className="form-group">
                                             <label>Country</label>
-                                            <select className="form-control select">
-                                                <option>USA</option>
-                                                <option>United Kingdom</option>
+                                            <select className="form-control select" value={selectedCompany.country} onChange={(e) => setSelectedCompany({...selectedCompany,country: e.target.value})}>
+                                                <option value="USA">USA</option>
+                                                <option value="United Kingdom">United Kingdom</option>
                                             </select>
                                         </div>
                                     </div>
