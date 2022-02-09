@@ -2,24 +2,53 @@
  * Signin Firebase
  */
 
- import React, { useEffect } from 'react';
+ import React, {useEffect, useState} from 'react';
 import { Helmet } from "react-helmet";
+import { TimePicker } from 'antd';
+import moment from 'moment';
+
 
 const Localization = () => {
-  useEffect( ()=>{
-    let selectbox = localStorage.getItem("selectbox")
-    if(selectbox === "true"){
-        setTimeout(function() {
-          window.location.reload(1)
-          localStorage.removeItem("selectbox")
-        },1000)
-    }if($('.select').length > 0) {
-      $('.select').select2({
-        minimumResultsForSearch: -1,
-        width: '100%'
-      });
-    }
- });
+ //  useEffect( ()=>{
+ //    let selectbox = localStorage.getItem("selectbox")
+ //    if(selectbox === "true"){
+ //        setTimeout(function() {
+ //          window.location.reload(1)
+ //          localStorage.removeItem("selectbox")
+ //        },1000)
+ //    }if($('.select').length > 0) {
+ //      $('.select').select2({
+ //        minimumResultsForSearch: -1,
+ //        width: '100%'
+ //      });
+ //    }
+ // });
+
+  const [localization,setLocalization] = useState({
+    starTime:'00:00:00',
+    endTime:'00:00:00',
+    workingHours:'',
+    gracePeriod:''
+  })
+
+  const onStartTimeChange = (time, timeString) => {
+    setLocalization({
+      ...localization,
+      starTime:timeString
+    })
+  }
+
+  const onEndTimeChange = (time, timeString) =>{
+    setLocalization({
+      ...localization,
+      endTime:timeString
+    })
+  }
+
+  const formSubmitHandler = (e) =>{
+    e.preventDefault();
+    console.log(localization);
+  }
 
   return ( 
          <div className="page-wrapper">
@@ -40,69 +69,65 @@ const Localization = () => {
                  </div>
                </div>
                {/* /Page Header */}
-               <form>
+               <form onSubmit={formSubmitHandler}>
                  <div className="row">
                    <div className="col-sm-6">
                      <div className="form-group">
                        <label>Default Country</label>
-                       <select className="select">
-                         <option >USA</option>
-                         <option>United Kingdom</option>
-                       </select>
-                     </div>
-                   </div>
-                   <div className="col-sm-6">
-                     <div className="form-group">
-                       <label>Date Format</label>
-                       <select className="select">
-                         <option value="d/m/Y">15/05/2016</option>
-                         <option value="d.m.Y">15.05.2016</option>
-                         <option value="d-m-Y">15-05-2016</option>
-                         <option value="m/d/Y">05/15/2016</option>
-                         <option value="Y/m/d">2016/05/15</option>
-                         <option value="Y-m-d">2016-05-15</option>
-                         <option value="M d Y">May 15 2016</option>
-                         <option value="d M Y">15 May 2016</option>
-                       </select>
+                       <input className="form-control" readOnly defaultValue="United Kingdom" type="text" />
                      </div>
                    </div>
                    <div className="col-sm-6">
                      <div className="form-group">
                        <label>Timezone</label>
-                       <select className="select">
-                         <option>(UTC +5:30) Antarctica/Palmer</option>
-                       </select>
+                       <input className="form-control" readOnly defaultValue="(UTC +5:30) Antarctica/Palmer" type="text" />
                      </div>
                    </div>
                    <div className="col-sm-6">
                      <div className="form-group">
-                       <label>Default Language</label>
-                       <select className="select">
-                         <option >English</option>
-                         <option>French</option>
-                       </select>
+                       <label>Start Time</label>
+                       <TimePicker
+                           className="form-control"
+                           defaultValue={moment(localization.starTime, 'HH:mm:ss')}
+                           onChange={onStartTimeChange}
+                           size="large" />
                      </div>
                    </div>
                    <div className="col-sm-6">
                      <div className="form-group">
-                       <label>Currency Code</label>
-                       <select className="select">
-                         <option>USD</option>
-                         <option>Pound</option>
-                         <option>EURO</option>
-                         <option>Ringgit</option>
-                       </select>
+                       <label>End Time</label>
+                       <TimePicker className="form-control"
+                                   defaultValue={moment(localization.endTime, 'HH:mm:ss')}
+                                   onChange={onEndTimeChange}
+                                   size="large"
+                       />
                      </div>
                    </div>
                    <div className="col-sm-6">
                      <div className="form-group">
-                       <label>Currency Symbol</label>
-                       <input className="form-control" readOnly defaultValue="$" type="text" />
+                       <label>Working Hours Per Day</label>
+                       <input
+                           className="form-control"
+                           type="text"
+                           value={localization.workingHours}
+                           onChange={e=>setLocalization({...localization,workingHours:e.target.value})}
+                       />
+                     </div>
+                   </div>
+                   <div className="col-sm-6">
+                     <div className="form-group">
+                       <label>Grace Period</label>
+                       <input
+                           className="form-control"
+                           type="text"
+                           value={localization.gracePeriod}
+                           onChange={ e => setLocalization({...localization,gracePeriod:e.target.value})}
+                       />
                      </div>
                    </div>
                    <div className="col-sm-12">
                      <div className="submit-section">
-                       <button className="btn btn-primary submit-btn">Save</button>
+                       <button type="submit" className="btn btn-primary submit-btn">Save</button>
                      </div>
                    </div>
                  </div>
