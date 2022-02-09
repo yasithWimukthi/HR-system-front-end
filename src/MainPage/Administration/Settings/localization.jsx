@@ -6,6 +6,7 @@
 import { Helmet } from "react-helmet";
 import { TimePicker } from 'antd';
 import moment from 'moment';
+import axios from "axios";
 
 
 const Localization = () => {
@@ -25,16 +26,42 @@ const Localization = () => {
  // });
 
   const [localization,setLocalization] = useState({
-    starTime:'00:00:00',
-    endTime:'00:00:00',
-    workingHours:'',
-    gracePeriod:''
+    workingHours:"",
+    gracePeriod:"",
+    mode:'',
+    id:null
   })
+
+  useEffect(() => {
+    getLocalization();
+  },[])
+
+  const getLocalization = async () => {
+    const res = await axios.get(' http://127.0.0.1:8000/api/localizations/');
+    console.log(res.data);
+    if(res.data.length > 0) {
+      setLocalization({
+        ...localization,
+        startTime:res.data[0].startTime,
+        endTime:res.data[0].endTime,
+        workingHours:res.data[0].workingHours,
+        gracePeriod:res.data[0].gracePeriod,
+        id: res.data[0].id,
+        mode:'edit'
+      })
+    }else{
+      setLocalization({
+        ...localization,
+        startTime:"00:00:00",
+        endTime:"00:00:00",
+      })
+    }
+  }
 
   const onStartTimeChange = (time, timeString) => {
     setLocalization({
       ...localization,
-      starTime:timeString
+      startTime:timeString
     })
   }
 
@@ -45,9 +72,38 @@ const Localization = () => {
     })
   }
 
-  const formSubmitHandler = (e) =>{
+  const formSubmitHandler = async (e) =>{
     e.preventDefault();
     console.log(localization);
+
+    if (localization.mode === 'edit') {
+      await axios.post(` http://127.0.0.1:8000/api/localizations/${localization.id}`, {
+        startTime:localization.startTime,
+        endTime:localization.endTime,
+        workingHours:localization.workingHours,
+        gracePeriod:localization.gracePeriod
+      })
+          .then(res => {
+            console.log(res);
+          })
+          .catch(err => {
+            console.log(err);
+          });
+    }else{
+      await axios.post(' http://127.0.0.1:8000/api/localizations/', {
+        startTime:localization.startTime,
+        endTime:localization.endTime,
+        workingHours:localization.workingHours,
+        gracePeriod:localization.gracePeriod
+      })
+          .then(res => {
+            console.log(res);
+          })
+          .catch(err => {
+            console.log(err);
+          });
+    }
+
   }
 
   return ( 
@@ -88,7 +144,7 @@ const Localization = () => {
                        <label>Start Time</label>
                        <TimePicker
                            className="form-control"
-                           defaultValue={moment(localization.starTime, 'HH:mm:ss')}
+                           value={moment(localization.startTime, 'HH:mm:ss')}
                            onChange={onStartTimeChange}
                            size="large" />
                      </div>
@@ -97,10 +153,10 @@ const Localization = () => {
                      <div className="form-group">
                        <label>End Time</label>
                        <TimePicker className="form-control"
-                                   defaultValue={moment(localization.endTime, 'HH:mm:ss')}
+                                   value={moment(localization.endTime, 'HH:mm:ss')}
                                    onChange={onEndTimeChange}
                                    size="large"
-                       />
+                                   placeholder={localization.endTime}/>
                      </div>
                    </div>
                    <div className="col-sm-6">
@@ -127,7 +183,7 @@ const Localization = () => {
                    </div>
                    <div className="col-sm-12">
                      <div className="submit-section">
-                       <button type="submit" className="btn btn-primary submit-btn">Save</button>
+                       <button type="submit" className="btn btn-primary submit-btn">{localization.mode === 'edit'? 'Update' : 'Save'}</button>
                      </div>
                    </div>
                  </div>
