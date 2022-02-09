@@ -7,6 +7,7 @@ import {Helmet} from "react-helmet";
 import {Link} from "react-router-dom";
 import axios from "axios";
 import '../../../assets/css/companySettings.css';
+import Select from 'react-select';
 
 const Settings = () => {
 
@@ -41,6 +42,11 @@ const Settings = () => {
         websiteUrl:''
     });
     const [removeCompanyId, setRemoveCompanyId] = useState(null);
+
+    const options = [
+        { value: 'USA', label: 'USA' },
+        { value: 'United Kingdom', label: 'United Kingdom' },
+    ];
 
     useEffect(() => {
         getCompanyList();
@@ -115,6 +121,20 @@ const Settings = () => {
             websiteUrl:company.websiteUrl
         });
     }
+
+    const handleChange = (selectedOption) => {
+         setCompany({
+            ...company,
+            country: selectedOption.value
+        });
+    };
+
+    const handleEditChange = (selectedOption) => {
+        setSelectedCompany({
+            ...selectedCompany,
+            country: selectedOption.value
+        });
+    };
 
     return (
         <div className="page-wrapper">
@@ -219,10 +239,11 @@ const Settings = () => {
                                     <div className="col-sm-4 col-md-4 col-lg-4">
                                         <div className="form-group" >
                                             <label>Country</label>
-                                            <select className="form-control select" value={company.country}  onChange={e => setCompany({...company,country: e.target.value})}>
-                                                <option value="USA">USA</option>
-                                                <option value="United Kingdom">United Kingdom</option>
-                                            </select>
+                                                <Select
+                                                    defaultValue={company.country}
+                                                    onChange={handleChange}
+                                                    options={options}
+                                                />
                                         </div>
                                     </div>
                                     <div className="col-sm-4">
@@ -362,10 +383,12 @@ const Settings = () => {
                                     <div className="col-sm-12 col-md-12 col-lg-12">
                                         <div className="form-group">
                                             <label>Country</label>
-                                            <select className="form-control select" value={selectedCompany.country} onChange={(e) => setSelectedCompany({...selectedCompany,country: e.target.value})}>
-                                                <option value="USA">USA</option>
-                                                <option value="United Kingdom">United Kingdom</option>
-                                            </select>
+                                            <Select
+                                                defaultValue={selectedCompany.country}
+                                                onChange={handleEditChange}
+                                                options={options}
+                                                placeholder= {selectedCompany.country}
+                                            />
                                         </div>
                                     </div>
                                     <div className="col-sm-6">
