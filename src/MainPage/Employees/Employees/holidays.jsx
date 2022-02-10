@@ -3,47 +3,51 @@ import {Helmet} from "react-helmet";
 import {Link} from 'react-router-dom';
 import axios from "axios";
 import moment from "moment";
+import {Input, Space} from 'antd';
+
+
+const {Search} = Input;
 
 import "react-datepicker/dist/react-datepicker.css";
 
 const Holidays = () => {
 
-  const [holidays, setHolidays] = useState({title: '', date: ''});
-  const [holidaysList, setHolidaysList] = useState([]);
-  const [removeHolidayId, setRemoveHolidayId] = useState(undefined);
-  const [editHoliday, setEditHoliday] = useState({title: '', date: '',id:null});
+    const [holidays, setHolidays] = useState({title: '', date: ''});
+    const [holidaysList, setHolidaysList] = useState([]);
+    const [removeHolidayId, setRemoveHolidayId] = useState(undefined);
+    const [editHoliday, setEditHoliday] = useState({title: '', date: '', id: null});
 
-  useEffect( () => {
-    getHolidays()
-  }, []);
+    useEffect(() => {
+        getHolidays()
+    }, []);
 
-  const getHolidays = async () => {
-      const res = await axios.get(' http://127.0.0.1:8000/api/holidays/');
-      setHolidaysList(res.data);
-  }
+    const getHolidays = async () => {
+        const res = await axios.get(' http://127.0.0.1:8000/api/holidays/');
+        setHolidaysList(res.data);
+    }
 
-  const addHolidayHandler = async event => {
-      event.preventDefault();
-      const weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-      const day = new Date(holidays.date).getDay();
-      const holiday = {
-          ...holidays,
-          day: weekday[day]
-      }
-      await axios.post(' http://127.0.0.1:8000/api/holidays/', holiday)
-          .then(res => {
-              setHolidaysList(res.data);
-              setHolidays({title: '', date: ''});
-          })
-          .catch(err => {
-              console.log(err);
-          });
-  }
+    const addHolidayHandler = async event => {
+        event.preventDefault();
+        const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const day = new Date(holidays.date).getDay();
+        const holiday = {
+            ...holidays,
+            day: weekday[day]
+        }
+        await axios.post(' http://127.0.0.1:8000/api/holidays/', holiday)
+            .then(res => {
+                setHolidaysList(res.data);
+                setHolidays({title: '', date: ''});
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
 
     const editHolidayHandler = async event => {
         event.preventDefault();
         console.log(holidays);
-        const weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+        const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const day = new Date(editHoliday.date).getDay();
         const holiday = {
             ...editHoliday,
@@ -59,24 +63,33 @@ const Holidays = () => {
             });
     }
 
-  const removeHoliday = id => {
-      axios.delete(`http://localhost:8000/api/holidays/${id}`)
-          .then(res => {
-              setHolidaysList(res.data);
-          })
-          .catch(err => {
-              console.log(err);
-          });
-  }
+    const removeHoliday = id => {
+        axios.delete(`http://localhost:8000/api/holidays/${id}`)
+            .then(res => {
+                setHolidaysList(res.data);
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
 
-  const formatDate = date => {
-      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
-      const separateDate = date.split('-');
-      const year = separateDate[0];
-      const month = months[--separateDate[1]];
-      const day = separateDate[2];
-      return `${day} ${month} ${year}`;
-  }
+    const formatDate = date => {
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+        const separateDate = date.split('-');
+        const year = separateDate[0];
+        const month = months[--separateDate[1]];
+        const day = separateDate[2];
+        return `${day} ${month} ${year}`;
+    }
+
+    const onSearch = e => {
+        const filteredList = holidaysList.filter(holiday => {
+            return holiday.title.toLowerCase().includes(e.target.value.toLowerCase());
+        })
+        setHolidaysList(filteredList);
+
+        if(e.target.value.length === 0) getHolidays();
+    }
 
     return (
         <div className="page-wrapper">
@@ -103,7 +116,9 @@ const Holidays = () => {
                     </div>
                 </div>
                 {/* /Page Header */}
-                <div className="row">
+
+                <Search placeholder="input search title" allowClear onChange={onSearch} style={{width: 200}}/>
+                <div className="row mt-2">
                     <div className="col-md-12">
                         <div className="table-responsive">
                             <table className="table table-striped custom-table mb-0">
@@ -118,21 +133,29 @@ const Holidays = () => {
                                 </thead>
                                 <tbody>
                                 {
-                                    holidaysList && holidaysList.length>0 && holidaysList.map((holiday,index) => (
-                                        <tr className={moment() > moment(holiday.date) ?  'holiday-completed':''} key={holiday.id}>
+                                    holidaysList && holidaysList.length > 0 && holidaysList.map((holiday, index) => (
+                                        <tr className={moment() > moment(holiday.date) ? 'holiday-completed' : ''}
+                                            key={holiday.id}>
                                             <td>{++index}</td>
                                             <td>{holiday.title}</td>
                                             <td>{formatDate(holiday.date)}</td>
                                             <td>{holiday.day}</td>
                                             <td className="text-right">
-                                                <div className={moment() > moment(holiday.date) ?  'dropdown dropdown-action d-none':'dropdown dropdown-action'}>
-                                                    <a href="#" className="action-icon dropdown-toggle" data-toggle="dropdown"
+                                                <div
+                                                    className={moment() > moment(holiday.date) ? 'dropdown dropdown-action d-none' : 'dropdown dropdown-action'}>
+                                                    <a href="#" className="action-icon dropdown-toggle"
+                                                       data-toggle="dropdown"
                                                        aria-expanded="false"><i className="material-icons">more_vert</i></a>
                                                     <div className="dropdown-menu dropdown-menu-right">
                                                         <a className="dropdown-item" href="#" data-toggle="modal"
-                                                           data-target="#edit_holiday" onClick={() => setEditHoliday({title:holiday.title,date:holiday.date, id: holiday.id})}><i className="fa fa-pencil m-r-5"/> Edit</a>
+                                                           data-target="#edit_holiday" onClick={() => setEditHoliday({
+                                                            title: holiday.title,
+                                                            date: holiday.date,
+                                                            id: holiday.id
+                                                        })}><i className="fa fa-pencil m-r-5"/> Edit</a>
                                                         <a className="dropdown-item" href="#" data-toggle="modal"
-                                                           data-target="#delete_holiday" onClick={() => setRemoveHolidayId(holiday.id)}><i
+                                                           data-target="#delete_holiday"
+                                                           onClick={() => setRemoveHolidayId(holiday.id)}><i
                                                             className="fa fa-trash-o m-r-5"/> Delete</a>
                                                     </div>
                                                 </div>
@@ -148,7 +171,7 @@ const Holidays = () => {
             </div>
             {/* /Page Content */}
             {/* Add Holiday Modal */}
-            <div className="modal custom-modal fade " id="add_holiday" role="dialog" >
+            <div className="modal custom-modal fade " id="add_holiday" role="dialog">
                 <div className="modal-dialog modal-dialog-centered" role="document">
                     <div className="modal-content">
                         <div className="modal-header">
@@ -158,17 +181,22 @@ const Holidays = () => {
                             </button>
                         </div>
                         <div className="modal-body">
-                            <form >
+                            <form>
                                 <div className="form-group">
                                     <label>Holiday Name <span className="text-danger">*</span></label>
-                                    <input className="form-control" value={holidays.title} onChange={e=>setHolidays({...holidays,title: e.target.value})} type="text"/>
+                                    <input className="form-control" value={holidays.title}
+                                           onChange={e => setHolidays({...holidays, title: e.target.value})}
+                                           type="text"/>
                                 </div>
                                 <div className="form-group">
                                     <label>Holiday Date <span className="text-danger">*</span></label>
-                                    <div><input className="form-control " type="date" value={holidays.date} onChange={e=>setHolidays({...holidays,date: e.target.value})}/></div>
+                                    <div><input className="form-control " type="date" value={holidays.date}
+                                                onChange={e => setHolidays({...holidays, date: e.target.value})}/></div>
                                 </div>
                                 <div className="submit-section">
-                                    <button className="btn btn-primary submit-btn" data-dismiss="modal" onClick={addHolidayHandler}>Submit</button>
+                                    <button className="btn btn-primary submit-btn" data-dismiss="modal"
+                                            onClick={addHolidayHandler}>Submit
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -187,18 +215,24 @@ const Holidays = () => {
                             </button>
                         </div>
                         <div className="modal-body">
-                            <form >
+                            <form>
                                 <div className="form-group">
                                     <label>Holiday Name <span className="text-danger">*</span></label>
-                                    <input className="form-control" defaultValue="New Year" type="text" value={editHoliday.title} onChange={e=>setEditHoliday({...editHoliday,title: e.target.value})}/>
+                                    <input className="form-control" defaultValue="New Year" type="text"
+                                           value={editHoliday.title}
+                                           onChange={e => setEditHoliday({...editHoliday, title: e.target.value})}/>
                                 </div>
                                 <div className="form-group">
                                     <label>Holiday Date <span className="text-danger">*</span></label>
                                     <div><input className="form-control"
-                                                type="date" value={editHoliday.date} onChange={e=>setEditHoliday({...editHoliday,date: e.target.value})}/></div>
+                                                type="date" value={editHoliday.date}
+                                                onChange={e => setEditHoliday({...editHoliday, date: e.target.value})}/>
+                                    </div>
                                 </div>
                                 <div className="submit-section">
-                                    <button type="submit" data-dismiss="modal"  className="btn btn-primary submit-btn" onClick={editHolidayHandler}>Save</button>
+                                    <button type="submit" data-dismiss="modal" className="btn btn-primary submit-btn"
+                                            onClick={editHolidayHandler}>Save
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -218,11 +252,12 @@ const Holidays = () => {
                             <div className="modal-btn delete-action">
                                 <div className="row">
                                     <div className="col-6">
-                                        <a href="#" data-dismiss="modal" className="btn btn-primary continue-btn" onClick={() => removeHoliday(removeHolidayId)}>Delete</a>
+                                        <a href="#" data-dismiss="modal" className="btn btn-primary continue-btn"
+                                           onClick={() => removeHoliday(removeHolidayId)}>Delete</a>
                                     </div>
                                     <div className="col-6">
                                         <a href="#"
-                                           className="btn btn-primary cancel-btn" >Cancel</a>
+                                           className="btn btn-primary cancel-btn">Cancel</a>
                                     </div>
                                 </div>
                             </div>
