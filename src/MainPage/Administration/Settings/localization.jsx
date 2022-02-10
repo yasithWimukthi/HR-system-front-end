@@ -2,11 +2,12 @@
  * Signin Firebase
  */
 
- import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { Helmet } from "react-helmet";
 import { TimePicker } from 'antd';
 import moment from 'moment';
 import axios from "axios";
+import { Modal, Button } from 'antd'
 
 
 const Localization = () => {
@@ -26,11 +27,15 @@ const Localization = () => {
  // });
 
   const [localization,setLocalization] = useState({
+    startTime:"00:00:00",
+    endTime:"00:00:00",
     workingHours:"",
     gracePeriod:"",
     mode:'',
     id:null
   })
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
     getLocalization();
@@ -49,13 +54,14 @@ const Localization = () => {
         id: res.data[0].id,
         mode:'edit'
       })
-    }else{
-      setLocalization({
-        ...localization,
-        startTime:"00:00:00",
-        endTime:"00:00:00",
-      })
     }
+    // else{
+    //   setLocalization({
+    //     ...localization,
+    //     startTime:"00:00:00",
+    //     endTime:"00:00:00",
+    //   })
+    // }
   }
 
   const onStartTimeChange = (time, timeString) => {
@@ -85,6 +91,7 @@ const Localization = () => {
       })
           .then(res => {
             console.log(res);
+            setIsModalVisible(true);
           })
           .catch(err => {
             console.log(err);
@@ -98,6 +105,11 @@ const Localization = () => {
       })
           .then(res => {
             console.log(res);
+            setIsModalVisible(true);
+            setLocalization({
+              ...localization,
+              mode:'edit'
+            })
           })
           .catch(err => {
             console.log(err);
@@ -105,6 +117,16 @@ const Localization = () => {
     }
 
   }
+
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
 
   return ( 
          <div className="page-wrapper">
@@ -192,6 +214,9 @@ const Localization = () => {
            </div>
          </div>
          {/* /Page Content */}
+           <Modal title="Localization" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+             <p>Localization details are successfully saved.</p>
+           </Modal>
        </div>
       );
   }
