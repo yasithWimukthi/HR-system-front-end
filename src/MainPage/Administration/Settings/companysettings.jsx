@@ -384,7 +384,7 @@ const Settings = () => {
                                         <div className="form-group">
                                             <label>Country</label>
                                             <Select
-                                                defaultValue={selectedCompany.country}
+                                                value={selectedCompany.country}
                                                 onChange={handleEditChange}
                                                 options={options}
                                                 placeholder= {selectedCompany.country}

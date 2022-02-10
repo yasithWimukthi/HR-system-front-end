@@ -6,7 +6,7 @@ import moment from "moment";
 
 import "react-datepicker/dist/react-datepicker.css";
 
-const Holidays = ({history}) => {
+const Holidays = () => {
 
   const [holidays, setHolidays] = useState({title: '', date: ''});
   const [holidaysList, setHolidaysList] = useState([]);
