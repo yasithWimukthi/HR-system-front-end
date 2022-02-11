@@ -8,49 +8,50 @@ import {Link} from "react-router-dom";
 import axios from "axios";
 import '../../../assets/css/companySettings.css';
 import Select from 'react-select';
+import {message} from "antd";
 
 const Settings = () => {
 
-    const [company,setCompany] = useState({
-        country : 'USA',
-        companyName : '',
-        contactPerson : '',
-        address:'',
-        city:'',
-        state:'',
-        postalCode:'',
-        email:'',
-        phoneNumber:'',
-        mobileNumber:'',
-        fax:'',
-        websiteUrl:''
+    const [company, setCompany] = useState({
+        country: 'USA',
+        companyName: '',
+        contactPerson: '',
+        address: '',
+        city: '',
+        state: '',
+        postalCode: '',
+        email: '',
+        phoneNumber: '',
+        mobileNumber: '',
+        fax: '',
+        websiteUrl: ''
     })
     const [companyList, setCompanyList] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState({
-        id:null,
-        country : '',
-        companyName : '',
-        contactPerson : '',
-        address:'',
-        city:'',
-        state:'',
-        postalCode:'',
-        email:'',
-        phoneNumber:'',
-        mobileNumber:'',
-        fax:'',
-        websiteUrl:''
+        id: null,
+        country: '',
+        companyName: '',
+        contactPerson: '',
+        address: '',
+        city: '',
+        state: '',
+        postalCode: '',
+        email: '',
+        phoneNumber: '',
+        mobileNumber: '',
+        fax: '',
+        websiteUrl: ''
     });
     const [removeCompanyId, setRemoveCompanyId] = useState(null);
 
     const options = [
-        { value: 'USA', label: 'USA' },
-        { value: 'United Kingdom', label: 'United Kingdom' },
+        {value: 'USA', label: 'USA'},
+        {value: 'United Kingdom', label: 'United Kingdom'},
     ];
 
     useEffect(() => {
         getCompanyList();
-    },[])
+    }, [])
 
     const getCompanyList = async () => {
         const res = await axios.get(' http://127.0.0.1:8000/api/companies/');
@@ -64,33 +65,37 @@ const Settings = () => {
             .then(res => {
                 setCompanyList(res.data);
                 setCompany({
-                    country : '',
-                    companyName : '',
-                    contactPerson : '',
-                    address:'',
-                    city:'',
-                    state:'',
-                    postalCode:'',
-                    email:'',
-                    phoneNumber:'',
-                    mobileNumber:'',
-                    fax:'',
-                    websiteUrl:''
+                    country: '',
+                    companyName: '',
+                    contactPerson: '',
+                    address: '',
+                    city: '',
+                    state: '',
+                    postalCode: '',
+                    email: '',
+                    phoneNumber: '',
+                    mobileNumber: '',
+                    fax: '',
+                    websiteUrl: ''
                 });
+                message.success('Company details are  successfully saved.');
             })
             .catch(err => {
                 console.log(err);
+                message.error('Something went wrong. Try again.');
             });
     }
 
-    const editCompanyHandler = async e =>{
+    const editCompanyHandler = async e => {
         e.preventDefault();
         await axios.post(`http://localhost:8000/api/companies/${selectedCompany.id}`, selectedCompany)
             .then(res => {
                 setCompanyList(res.data);
+                message.success('Company details are successfully edited.');
             })
             .catch(err => {
                 console.log(err.message);
+                message.error('Something went wrong. Try again.');
             });
     }
 
@@ -98,32 +103,34 @@ const Settings = () => {
         axios.delete(`http://localhost:8000/api/companies/${id}`)
             .then(res => {
                 setCompanyList(res.data);
+                message.success('Company details are successfully removed.');
             })
             .catch(err => {
                 console.log(err);
+                message.error('Something went wrong. Try again.');
             });
     }
 
     const onClickEditCompany = (company) => {
         setSelectedCompany({
-            id:company.id,
-            country : company.country,
-            companyName : company.companyName,
-            contactPerson : company.contactPerson,
-            address:company.address,
-            city:company.city,
-            state:company.state,
-            postalCode:company.postalCode,
-            email:company.email,
-            phoneNumber:company.phoneNumber,
-            mobileNumber:company.mobileNumber,
-            fax:company.fax,
-            websiteUrl:company.websiteUrl
+            id: company.id,
+            country: company.country,
+            companyName: company.companyName,
+            contactPerson: company.contactPerson,
+            address: company.address,
+            city: company.city,
+            state: company.state,
+            postalCode: company.postalCode,
+            email: company.email,
+            phoneNumber: company.phoneNumber,
+            mobileNumber: company.mobileNumber,
+            fax: company.fax,
+            websiteUrl: company.websiteUrl
         });
     }
 
     const handleChange = (selectedOption) => {
-         setCompany({
+        setCompany({
             ...company,
             country: selectedOption.value
         });
@@ -186,7 +193,7 @@ const Settings = () => {
                                 </thead>
                                 <tbody>
                                 {
-                                    companyList && companyList.length>0 && companyList.map((company,index) => (
+                                    companyList && companyList.length > 0 && companyList.map((company, index) => (
                                         <tr key={company.id}>
                                             <td>{++index}</td>
                                             <td>{company.country}</td>
@@ -203,13 +210,17 @@ const Settings = () => {
                                             <td>{company.websiteUrl}</td>
                                             <td className="text-right">
                                                 <div className='dropdown dropdown-action'>
-                                                    <a href="#" className="action-icon dropdown-toggle" data-toggle="dropdown"
+                                                    <a href="#" className="action-icon dropdown-toggle"
+                                                       data-toggle="dropdown"
                                                        aria-expanded="false"><i className="material-icons">more_vert</i></a>
                                                     <div className="dropdown-menu dropdown-menu-right">
                                                         <a className="dropdown-item" href="#" data-toggle="modal"
-                                                           data-target="#edit_company"  onClick={() => onClickEditCompany(company)}><i className="fa fa-pencil m-r-5" /> Edit</a>
+                                                           data-target="#edit_company"
+                                                           onClick={() => onClickEditCompany(company)}><i
+                                                            className="fa fa-pencil m-r-5"/> Edit</a>
                                                         <a className="dropdown-item" href="#" data-toggle="modal"
-                                                           data-target="#delete_company"  onClick={() => setRemoveCompanyId(company.id)}><i
+                                                           data-target="#delete_company"
+                                                           onClick={() => setRemoveCompanyId(company.id)}><i
                                                             className="fa fa-trash-o m-r-5"/> Delete</a>
                                                     </div>
                                                 </div>
@@ -237,13 +248,13 @@ const Settings = () => {
                             <form>
                                 <div className="row">
                                     <div className="col-sm-4 col-md-4 col-lg-4">
-                                        <div className="form-group" >
+                                        <div className="form-group">
                                             <label>Country</label>
-                                                <Select
-                                                    defaultValue={company.country}
-                                                    onChange={handleChange}
-                                                    options={options}
-                                                />
+                                            <Select
+                                                defaultValue={company.country}
+                                                onChange={handleChange}
+                                                options={options}
+                                            />
                                         </div>
                                     </div>
                                     <div className="col-sm-4">
@@ -251,7 +262,10 @@ const Settings = () => {
                                             <label>Company Name <span className="text-danger">*</span></label>
                                             <input className="form-control" type="text"
                                                    value={company.companyName}
-                                                   onChange={e => setCompany({...company,companyName:e.target.value})}/>
+                                                   onChange={e => setCompany({
+                                                       ...company,
+                                                       companyName: e.target.value
+                                                   })}/>
                                         </div>
                                     </div>
                                     <div className="col-sm-4">
@@ -259,7 +273,10 @@ const Settings = () => {
                                             <label>Contact Person</label>
                                             <input className="form-control "
                                                    type="text" value={company.contactPerson}
-                                                   onChange={e => setCompany({...company,contactPerson:e.target.value})}
+                                                   onChange={e => setCompany({
+                                                       ...company,
+                                                       contactPerson: e.target.value
+                                                   })}
                                             />
                                         </div>
                                     </div>
@@ -271,7 +288,7 @@ const Settings = () => {
                                             <input className="form-control "
                                                    type="text"
                                                    value={company.address}
-                                                   onChange={e => setCompany({...company,address:e.target.value})}
+                                                   onChange={e => setCompany({...company, address: e.target.value})}
                                             />
                                         </div>
                                     </div>
@@ -280,7 +297,7 @@ const Settings = () => {
                                             <label>City</label>
                                             <input className="form-control"
                                                    value={company.city}
-                                                   onChange={e => setCompany({...company,city:e.target.value})}
+                                                   onChange={e => setCompany({...company, city: e.target.value})}
                                                    type="text"/>
                                         </div>
                                     </div>
@@ -289,7 +306,7 @@ const Settings = () => {
                                             <label>State/Province</label>
                                             <input className="form-control" type="text"
                                                    value={company.state}
-                                                    onChange={e => setCompany({...company,state:e.target.value})}/>
+                                                   onChange={e => setCompany({...company, state: e.target.value})}/>
                                         </div>
                                     </div>
                                     <div className="col-sm-4 col-md-4 col-lg-4">
@@ -298,7 +315,7 @@ const Settings = () => {
                                             <input className="form-control"
                                                    type="text"
                                                    value={company.postalCode}
-                                                   onChange={e => setCompany({...company,postalCode:e.target.value})}
+                                                   onChange={e => setCompany({...company, postalCode: e.target.value})}
                                             />
                                         </div>
                                     </div>
@@ -308,7 +325,7 @@ const Settings = () => {
                                             <input className="form-control"
                                                    type="email"
                                                    value={company.email}
-                                                   onChange={e => setCompany({...company,email:e.target.value})}
+                                                   onChange={e => setCompany({...company, email: e.target.value})}
                                             />
                                         </div>
                                     </div>
@@ -320,7 +337,7 @@ const Settings = () => {
                                             <input className="form-control"
                                                    type="text"
                                                    value={company.phoneNumber}
-                                                   onChange={e => setCompany({...company,phoneNumber:e.target.value})}
+                                                   onChange={e => setCompany({...company, phoneNumber: e.target.value})}
                                             />
                                         </div>
                                     </div>
@@ -331,7 +348,7 @@ const Settings = () => {
                                                 className="form-control"
                                                 type="text"
                                                 value={company.mobileNumber}
-                                                onChange={e => setCompany({...company,mobileNumber:e.target.value})}
+                                                onChange={e => setCompany({...company, mobileNumber: e.target.value})}
                                             />
                                         </div>
                                     </div>
@@ -341,7 +358,7 @@ const Settings = () => {
                                             <input className="form-control"
                                                    type="text"
                                                    value={company.fax}
-                                                   onChange={e => setCompany({...company,fax:e.target.value})}
+                                                   onChange={e => setCompany({...company, fax: e.target.value})}
                                             />
                                         </div>
                                     </div>
@@ -353,13 +370,15 @@ const Settings = () => {
                                             <input className="form-control"
                                                    type="text"
                                                    value={company.websiteUrl}
-                                                   onChange={e => setCompany({...company,websiteUrl:e.target.value})}
+                                                   onChange={e => setCompany({...company, websiteUrl: e.target.value})}
                                             />
                                         </div>
                                     </div>
                                 </div>
                                 <div className="submit-section">
-                                    <button className="btn btn-primary submit-btn" data-dismiss="modal" onClick={addCompanyHandler}>Save</button>
+                                    <button className="btn btn-primary submit-btn" data-dismiss="modal"
+                                            onClick={addCompanyHandler}>Save
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -387,7 +406,7 @@ const Settings = () => {
                                                 value={selectedCompany.country}
                                                 onChange={handleEditChange}
                                                 options={options}
-                                                placeholder= {selectedCompany.country}
+                                                placeholder={selectedCompany.country}
                                             />
                                         </div>
                                     </div>
@@ -397,7 +416,10 @@ const Settings = () => {
                                             <input className="form-control"
                                                    type="text"
                                                    value={selectedCompany.companyName}
-                                                   onChange={e => setSelectedCompany({...selectedCompany,companyName:e.target.value})}
+                                                   onChange={e => setSelectedCompany({
+                                                       ...selectedCompany,
+                                                       companyName: e.target.value
+                                                   })}
                                             />
                                         </div>
                                     </div>
@@ -406,7 +428,10 @@ const Settings = () => {
                                             <label>Contact Person</label>
                                             <input className="form-control "
                                                    value={selectedCompany.contactPerson}
-                                                   onChange={e => setSelectedCompany({...selectedCompany,contactPerson:e.target.value})}
+                                                   onChange={e => setSelectedCompany({
+                                                       ...selectedCompany,
+                                                       contactPerson: e.target.value
+                                                   })}
                                                    type="text"/>
                                         </div>
                                     </div>
@@ -417,7 +442,10 @@ const Settings = () => {
                                             <label>Address</label>
                                             <input className="form-control "
                                                    value={selectedCompany.address}
-                                                   onChange={e => setSelectedCompany({...selectedCompany,address:e.target.value})}
+                                                   onChange={e => setSelectedCompany({
+                                                       ...selectedCompany,
+                                                       address: e.target.value
+                                                   })}
                                                    type="text"/>
                                         </div>
                                     </div>
@@ -426,7 +454,10 @@ const Settings = () => {
                                             <label>City</label>
                                             <input className="form-control"
                                                    value={selectedCompany.city}
-                                                   onChange={e => setSelectedCompany({...selectedCompany,city:e.target.value})}
+                                                   onChange={e => setSelectedCompany({
+                                                       ...selectedCompany,
+                                                       city: e.target.value
+                                                   })}
                                                    type="text"/>
                                         </div>
                                     </div>
@@ -435,7 +466,10 @@ const Settings = () => {
                                             <label>State/Province</label>
                                             <input className="form-control" type="text"
                                                    value={selectedCompany.state}
-                                                   onChange={e => setSelectedCompany({...selectedCompany,state:e.target.value})}
+                                                   onChange={e => setSelectedCompany({
+                                                       ...selectedCompany,
+                                                       state: e.target.value
+                                                   })}
                                             />
                                         </div>
                                     </div>
@@ -444,7 +478,10 @@ const Settings = () => {
                                             <label>Postal Code</label>
                                             <input className="form-control"
                                                    value={selectedCompany.postalCode}
-                                                   onChange={e => setSelectedCompany({...selectedCompany,postalCode:e.target.value})}
+                                                   onChange={e => setSelectedCompany({
+                                                       ...selectedCompany,
+                                                       postalCode: e.target.value
+                                                   })}
                                                    type="text"/>
                                         </div>
                                     </div>
@@ -455,7 +492,10 @@ const Settings = () => {
                                             <label>Email</label>
                                             <input className="form-control"
                                                    value={selectedCompany.email}
-                                                   onChange={e => setSelectedCompany({...selectedCompany,email:e.target.value})}
+                                                   onChange={e => setSelectedCompany({
+                                                       ...selectedCompany,
+                                                       email: e.target.value
+                                                   })}
                                                    type="email"/>
                                         </div>
                                     </div>
@@ -464,7 +504,10 @@ const Settings = () => {
                                             <label>Phone Number</label>
                                             <input className="form-control"
                                                    value={selectedCompany.phoneNumber}
-                                                   onChange={e => setSelectedCompany({...selectedCompany,phoneNumber:e.target.value})}
+                                                   onChange={e => setSelectedCompany({
+                                                       ...selectedCompany,
+                                                       phoneNumber: e.target.value
+                                                   })}
                                                    type="text"/>
                                         </div>
                                     </div>
@@ -475,7 +518,10 @@ const Settings = () => {
                                             <label>Mobile Number</label>
                                             <input className="form-control"
                                                    value={selectedCompany.mobileNumber}
-                                                   onChange={e => setSelectedCompany({...selectedCompany,mobileNumber:e.target.value})}
+                                                   onChange={e => setSelectedCompany({
+                                                       ...selectedCompany,
+                                                       mobileNumber: e.target.value
+                                                   })}
                                                    type="text"/>
                                         </div>
                                     </div>
@@ -484,7 +530,10 @@ const Settings = () => {
                                             <label>Fax</label>
                                             <input className="form-control"
                                                    value={selectedCompany.fax}
-                                                   onChange={e => setSelectedCompany({...selectedCompany,fax:e.target.value})}
+                                                   onChange={e => setSelectedCompany({
+                                                       ...selectedCompany,
+                                                       fax: e.target.value
+                                                   })}
                                                    type="text"/>
                                         </div>
                                     </div>
@@ -495,7 +544,10 @@ const Settings = () => {
                                             <label>Website Url</label>
                                             <input className="form-control"
                                                    value={selectedCompany.websiteUrl}
-                                                   onChange={e => setSelectedCompany({...selectedCompany,websiteUrl:e.target.value})}
+                                                   onChange={e => setSelectedCompany({
+                                                       ...selectedCompany,
+                                                       websiteUrl: e.target.value
+                                                   })}
                                                    type="text"/>
                                         </div>
                                     </div>
@@ -507,7 +559,8 @@ const Settings = () => {
                                         type="submit"
                                         onClick={editCompanyHandler}
                                     >
-                                        Save</button>
+                                        Save
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -528,7 +581,8 @@ const Settings = () => {
                                 <div className="row">
                                     <div className="col-6">
                                         <a href="#" data-dismiss="modal"
-                                           className="btn btn-primary continue-btn" onClick={() => removeCompany(removeCompanyId)}>Delete</a>
+                                           className="btn btn-primary continue-btn"
+                                           onClick={() => removeCompany(removeCompanyId)}>Delete</a>
                                     </div>
                                     <div className="col-6">
                                         <a href="#"
