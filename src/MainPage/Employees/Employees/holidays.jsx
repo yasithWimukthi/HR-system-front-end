@@ -3,11 +3,7 @@ import {Helmet} from "react-helmet";
 import {Link} from 'react-router-dom';
 import axios from "axios";
 import moment from "moment";
-import {Input, Space} from 'antd';
-
-
-const {Search} = Input;
-
+import {Input, message} from 'antd';
 import "react-datepicker/dist/react-datepicker.css";
 
 const Holidays = () => {
@@ -16,6 +12,7 @@ const Holidays = () => {
     const [holidaysList, setHolidaysList] = useState([]);
     const [removeHolidayId, setRemoveHolidayId] = useState(undefined);
     const [editHoliday, setEditHoliday] = useState({title: '', date: '', id: null});
+    const {Search} = Input;
 
     useEffect(() => {
         getHolidays()
@@ -38,9 +35,11 @@ const Holidays = () => {
             .then(res => {
                 setHolidaysList(res.data);
                 setHolidays({title: '', date: ''});
+                message.success('Holiday is saved.');
             })
             .catch(err => {
                 console.log(err);
+                message.error('Something went wrong. Try again.');
             });
     }
 
@@ -57,9 +56,11 @@ const Holidays = () => {
         await axios.post(`http://localhost:8000/api/holidays/${editHoliday.id}`, holiday)
             .then(res => {
                 setHolidaysList(res.data);
+                message.success('Holiday is successfully edited.');
             })
             .catch(err => {
                 console.log(err.message);
+                message.error('Something went wrong. Try again.');
             });
     }
 
@@ -67,9 +68,11 @@ const Holidays = () => {
         axios.delete(`http://localhost:8000/api/holidays/${id}`)
             .then(res => {
                 setHolidaysList(res.data);
+                message.success('Holiday is successfully removed.');
             })
             .catch(err => {
                 console.log(err);
+                message.error('Something went wrong. Try again.');
             });
     }
 
@@ -88,7 +91,7 @@ const Holidays = () => {
         })
         setHolidaysList(filteredList);
 
-        if(e.target.value.length === 0) getHolidays();
+        if (e.target.value.length === 0) getHolidays();
     }
 
     return (
