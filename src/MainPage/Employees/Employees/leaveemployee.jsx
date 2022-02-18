@@ -110,7 +110,6 @@ const LeaveEmployee = () => {
                 </div>
               </div>
             ),
-      
         
         },
         
