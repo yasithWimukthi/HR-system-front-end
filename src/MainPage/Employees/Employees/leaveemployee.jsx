@@ -39,6 +39,17 @@ const LeaveEmployee = () => {
         reason: ''
     })
 
+    const [selectedLeave, setSelectedLeave] = useState({
+        department: '',
+        designation: '',
+        name: '',
+        leaveApplyDate: '',
+        leaveDatesFrom: new Date(),
+        leaveDatesTo: new Date(),
+        numOfDays: '',
+        reason: ''
+    })
+
     const [leaveList, setLeaveList] = useState([])
 
     useEffect(() => {
@@ -59,10 +70,11 @@ const LeaveEmployee = () => {
         e.preventDefault();
         await axios.post(' http://127.0.0.1:8000/api/leaves/', {
             ...leave,
+            leaveDatesFrom: leave.leaveDatesFrom.toISOString().split('T')[0],
+            leaveDatesTo: leave.leaveDatesTo.toISOString().split('T')[0],
             numOfDays: +leave.numOfDays
         })
             .then(res => {
-                // setHolidaysList(res.data);
                 setLeave({
                     department: '',
                     designation: '',
@@ -310,7 +322,7 @@ const LeaveEmployee = () => {
                     <a href="#" className="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i
                         className="material-icons">more_vert</i></a>
                     <div className="dropdown-menu dropdown-menu-right">
-                        <a className="dropdown-item" href="#" data-toggle="modal" data-target="#edit_leave"><i
+                        <a className="dropdown-item" href="#" data-toggle="modal" data-target="#edit_leave" onClick={() =>setSelectedLeave(record)}><i
                             className="fa fa-pencil m-r-5"/> Edit</a>
                         <a className="dropdown-item" href="#" data-toggle="modal" data-target="#delete_approve"><i
                             className="fa fa-trash-o m-r-5"/> Delete</a>
@@ -493,40 +505,71 @@ const LeaveEmployee = () => {
                         <div className="modal-body">
                             <form>
                                 <div className="form-group">
-                                    <label>Leave Type <span className="text-danger">*</span></label>
-                                    <select className="select">
-                                        <option>Select Leave Type</option>
-                                        <option>Casual Leave 12 Days</option>
-                                    </select>
+                                    <label>Department <span className="text-danger">*</span></label>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        value={selectedLeave.department}
+                                        onChange={e => setSelectedLeave({...selectedLeave, department: e.target.value})}
+                                    />
                                 </div>
                                 <div className="form-group">
-                                    <label>From <span className="text-danger">*</span></label>
-                                    <div>
-                                        <input className="form-control datetimepicker" defaultValue="01-01-2019"
-                                               type="date"/>
-                                    </div>
+                                    <label>Designation <span className="text-danger">*</span></label>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        value={selectedLeave.designation}
+                                        onChange={e => setSelectedLeave({...selectedLeave, designation: e.target.value})}
+                                    />
                                 </div>
                                 <div className="form-group">
-                                    <label>To <span className="text-danger">*</span></label>
-                                    <div>
-                                        <input className="form-control datetimepicker" defaultValue="01-01-2019"
-                                               type="date"/>
-                                    </div>
+                                    <label>Name <span className="text-danger">*</span></label>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        value={selectedLeave.name}
+                                        onChange={e => setSelectedLeave({...selectedLeave, name: e.target.value})}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Leave Apply Date <span className="text-danger">*</span></label>
+                                    <input
+                                        className="form-control"
+                                        type="date"
+                                        value={selectedLeave.leaveApplyDate}
+                                        onChange={e => setSelectedLeave({...selectedLeave, leaveApplyDate: e.target.value})}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Leave Days<span className="text-danger">*</span></label>
+                                    <RangePicker
+                                        style={{height: '44px', width: '100%'}}
+                                        value={[moment(selectedLeave.leaveDatesFrom, dateFormat), moment(selectedLeave.leaveDatesTo, dateFormat)]}
+                                        onChange={onLeaveDaysChange}
+                                    />
                                 </div>
                                 <div className="form-group">
                                     <label>Number of days <span className="text-danger">*</span></label>
-                                    <input className="form-control" readOnly type="text" defaultValue={2}/>
-                                </div>
-                                <div className="form-group">
-                                    <label>Remaining Leaves <span className="text-danger">*</span></label>
-                                    <input className="form-control" readOnly defaultValue={12} type="text"/>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        value={selectedLeave.numOfDays}
+                                        onChange={e => setSelectedLeave({...selectedLeave, numOfDays: e.target.value})}
+                                    />
                                 </div>
                                 <div className="form-group">
                                     <label>Leave Reason <span className="text-danger">*</span></label>
-                                    <textarea rows={4} className="form-control" defaultValue={"Going to hospital"}/>
+                                    <textarea
+                                        rows={4}
+                                        className="form-control"
+                                        value={selectedLeave.reason}
+                                        onChange={e => {
+                                            setSelectedLeave({...selectedLeave, reason: e.target.value})
+                                        }}
+                                    />
                                 </div>
                                 <div className="submit-section">
-                                    <button className="btn btn-primary submit-btn">Save</button>
+                                    <button className="btn btn-primary submit-btn" onClick={submitLeave}>Submit</button>
                                 </div>
                             </form>
                         </div>
