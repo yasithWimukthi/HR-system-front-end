@@ -93,6 +93,33 @@ const LeaveEmployee = () => {
             });
     }
 
+    const editLeave = async e => {
+        e.preventDefault();
+        await axios.post(` http://127.0.0.1:8000/api/leaves/${selectedLeave.id}`, {
+            ...selectedLeave,
+            leaveDatesFrom: selectedLeave.leaveDatesFrom.toISOString().split('T')[0],
+            leaveDatesTo: selectedLeave.leaveDatesTo.toISOString().split('T')[0],
+            numOfDays: +selectedLeave.numOfDays
+        })
+            .then(res => {
+                setSelectedLeave({
+                    department: '',
+                    designation: '',
+                    name: '',
+                    leaveApplyDate: '',
+                    leaveDatesFrom: new Date(),
+                    leaveDatesTo: new Date(),
+                    numOfDays: '',
+                    reason: ''
+                })
+                message.success('Leave is saved.');
+            })
+            .catch(err => {
+                console.log(err);
+                message.error('Something went wrong. Try again.');
+            });
+    }
+
     const onLeaveDaysChange = val => {
         setLeave({
             ...leave,
@@ -322,7 +349,13 @@ const LeaveEmployee = () => {
                     <a href="#" className="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i
                         className="material-icons">more_vert</i></a>
                     <div className="dropdown-menu dropdown-menu-right">
-                        <a className="dropdown-item" href="#" data-toggle="modal" data-target="#edit_leave" onClick={() =>setSelectedLeave(record)}><i
+                        <a className="dropdown-item" href="#" data-toggle="modal" data-target="#edit_leave" onClick={() => {
+                            setSelectedLeave({
+                                ...record,
+                                leaveDatesFrom: new Date(record.leaveDatesFrom),
+                                leaveDatesTo: new Date(record.leaveDatesTo),
+                            })
+                        }}><i
                             className="fa fa-pencil m-r-5"/> Edit</a>
                         <a className="dropdown-item" href="#" data-toggle="modal" data-target="#delete_approve"><i
                             className="fa fa-trash-o m-r-5"/> Delete</a>
@@ -569,7 +602,7 @@ const LeaveEmployee = () => {
                                     />
                                 </div>
                                 <div className="submit-section">
-                                    <button className="btn btn-primary submit-btn" onClick={submitLeave}>Submit</button>
+                                    <button className="btn btn-primary submit-btn" onClick={editLeave}>Submit</button>
                                 </div>
                             </form>
                         </div>
