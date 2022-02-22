@@ -14,7 +14,7 @@ const LeaveSettings = () => {
     }, []);
 
     const getLeaves = async () => {
-        const res = await axios.get(' http://127.0.0.1:8000/api/leaves/');
+        const res = await axios.get(' http://127.0.0.1:8000/api/leaves-setting/');
         setLeaveList(res.data);
     }
 
