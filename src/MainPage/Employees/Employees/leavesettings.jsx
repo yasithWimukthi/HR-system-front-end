@@ -1,13 +1,33 @@
 import React, {useEffect, useState} from 'react';
 import {Helmet} from "react-helmet";
 import {Link} from 'react-router-dom';
-import {Avatar_02} from "../../../Entryfile/imagepath"
-import moment from "moment";
 import axios from "axios";
+import {Checkbox, message} from 'antd';
 
 const LeaveSettings = () => {
 
+    const options = [
+        { value: 'January', label: 'January' },
+        {value: 'February', label: 'February'},
+        {value: 'March', label: 'March'},
+        {value: 'April', label: 'April'},
+        {value: 'May', label: 'May'},
+        {value: 'June', label: 'June'},
+        {value: 'July', label: 'July'},
+        {value: 'August', label: 'August'},
+        {value: 'September', label: 'September'},
+        {value: 'October', label: 'October'},
+        {value: 'November', label: 'November'},
+        {value: 'December', label: 'December'}
+    ];
+
     const [leaveList, setLeaveList] = useState([]);
+    const [selectedLeave, setSelectedLeave] = useState({
+        leave_name: '',
+        country:'',
+        relevant_days: '',
+        joined_month:''
+    });
 
     useEffect(() => {
         getLeaves()
@@ -16,6 +36,24 @@ const LeaveSettings = () => {
     const getLeaves = async () => {
         const res = await axios.get(' http://127.0.0.1:8000/api/leaves-setting/');
         setLeaveList(res.data);
+    }
+
+    const saveLeaveSetting = async e => {
+        e.preventDefault();
+        await axios.post(`http://127.0.0.1:8000/api/leave-settings/${selectedLeave.id}`, selectedLeave)
+            .then(res => {
+                setLeaveList(res.data);
+                message.success('Holiday is successfully edited.');
+            })
+            .catch(err => {
+                console.log(err.message);
+                message.error('Something went wrong. Try again.');
+            });
+    }
+
+    const  onChange = (checkedValues) => {
+        console.log(checkedValues.toString());
+        setSelectedLeave({...selectedLeave, joined_month: checkedValues.toString()});
     }
 
     return (
@@ -62,8 +100,8 @@ const LeaveSettings = () => {
                                             <td>{index+1}</td>
                                             <td>{leave.country}</td>
                                             <td>{leave.leave_name}</td>
-                                            <td></td>
-                                            <td></td>
+                                            <td>{leave.relevant_days}</td>
+                                            <td>{leave.joined_month}</td>
                                             <td className="text-right">
                                                 <div className='dropdown dropdown-action'>
                                                     <a href="#" className="action-icon dropdown-toggle"
@@ -72,6 +110,7 @@ const LeaveSettings = () => {
                                                     <div className="dropdown-menu dropdown-menu-right">
                                                         <a className="dropdown-item" href="#" data-toggle="modal"
                                                            data-target="#edit_leave_type"
+                                                           onClick={() => setSelectedLeave(leave)}
                                                            ><i
                                                             className="fa fa-pencil m-r-5"/> Edit</a>
                                                         <a className="dropdown-item" href="#" data-toggle="modal"
@@ -104,16 +143,32 @@ const LeaveSettings = () => {
                             <form>
                                 <div className="form-group">
                                     <label>Holiday Name <span className="text-danger">*</span></label>
-                                    <input className="form-control" defaultValue="New Year" type="text"/>
+                                    <input
+                                        className="form-control"
+                                        value={selectedLeave.leave_name}
+                                        onChange={e => setSelectedLeave({...selectedLeave,leave_name:e.target.value})}
+                                        type="text"/>
                                 </div>
                                 <div className="form-group">
-                                    <label>Holiday Date <span className="text-danger">*</span></label>
-                                    <div><input className="form-control"
-                                                type="date" />
+                                    <label>Relevant Days <span className="text-danger">*</span></label>
+                                    <div>
+                                        <input
+                                            className="form-control"
+                                            value={selectedLeave.relevant_days}
+                                            onChange={(e) => setSelectedLeave({...selectedLeave, relevant_days: e.target.value})}
+                                            type="text"
+                                        />
                                     </div>
                                 </div>
+                                <div className="form-group">
+                                    <label>Joined Month <span className="text-danger">*</span></label>
+                                    <Checkbox.Group
+                                        options={options}
+                                        onChange={onChange}
+                                    />
+                                </div>
                                 <div className="submit-section">
-                                    <button type="submit" data-dismiss="modal" className="btn btn-primary submit-btn">Save
+                                    <button type="submit" data-dismiss="modal" className="btn btn-primary submit-btn" onClick={saveLeaveSetting}>Save
                                     </button>
                                 </div>
                             </form>
