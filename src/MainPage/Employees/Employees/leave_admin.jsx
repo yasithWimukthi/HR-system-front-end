@@ -8,8 +8,11 @@ import { Table } from 'antd';
 import 'antd/dist/antd.css';
 import {itemRender,onShowSizeChange} from "../../paginationfunction"
 import "../../antdstyle.css"
+import axios from "axios";
 
 const LeaveAdmin = () => {
+
+  const [leaveList, setLeaveList] = useState([])
 
     const [data, setData] = useState([
       {id:1,image:Avatar_02,name:"John Doe",role:"Web Designer",leavetype:"Medical Leave",from:"27 Feb 2019",to:'27 Feb 2019'
@@ -45,39 +48,53 @@ const LeaveAdmin = () => {
           width: '100%'
         });
       }
-    });  
+    });
+
+  useEffect(() => {
+    getAllLeaves();
+  }, [])
+
+  const getAllLeaves = async () => {
+    axios.get(' http://127.0.0.1:8000/api/leaves/')
+        .then(res => {
+          setLeaveList(res.data)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+  }
+
+
       const columns = [
         {
           title: 'Employee',
           dataIndex: 'name',
-          render: (text, record) => (            
-              <h2 className="table-avatar">
-                <Link to="/app/profile/employee-profile" className="avatar"><img alt="" src={record.image} /></Link>
-                <Link to="/app/profile/employee-profile">{text} <span>{record.role}</span></Link>
-              </h2>
-            ), 
-            sorter: (a, b) => a.name.length - b.name.length,
+          sorter: (a, b) => a.name.length - b.name.length,
         },
         {
-          title: 'Leave Type',
-          dataIndex: 'leavetype',
+          title: 'Department',
+          dataIndex: 'department',
           sorter: (a, b) => a.leavetype.length - b.leavetype.length,
         },
 
         {
-          title: 'From',
-          dataIndex: 'from',
+          title: 'Designation',
+          dataIndex: 'designation',
           sorter: (a, b) => a.from.length - b.from.length,
         },
         {
-          title: 'To',
-          dataIndex: 'to',
+          title: 'From',
+          dataIndex: 'leaveDatesFrom',
           sorter: (a, b) => a.to.length - b.to.length,
         },
-
+        {
+          title: 'To',
+          dataIndex: 'leaveDatesTo',
+          sorter: (a, b) => a.to.length - b.to.length,
+        },
         {
           title: 'No Of Days',
-          dataIndex: 'noofdays', 
+          dataIndex: 'numOfDays',
           sorter: (a, b) => a.noofdays.length - b.noofdays.length,
         },
       
@@ -229,7 +246,7 @@ const LeaveAdmin = () => {
                   style = {{overflowX : 'auto'}}
                   columns={columns}                 
                   // bordered
-                  dataSource={data}
+                  dataSource={leaveList}
                   rowKey={record => record.id}
                   onChange={console.log("chnage")}
                 />
