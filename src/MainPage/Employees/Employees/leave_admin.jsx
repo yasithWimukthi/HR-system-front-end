@@ -35,6 +35,7 @@ const LeaveAdmin = () => {
         numOfDays: '',
         reason: ''
     })
+    const[selectToDelete,setSelectToDelete] = useState({})
 
     useEffect(() => {
         if ($('.select').length > 0) {
@@ -116,6 +117,19 @@ const LeaveAdmin = () => {
             })
             .catch(err => {
                 console.log(err.message);
+                message.error('Something went wrong. Try again.');
+            });
+    }
+
+    const deleteLeave = async e => {
+        e.preventDefault();
+        await axios.delete(`http://localhost:8000/api/leaves/${selectToDelete.id}`)
+            .then(res => {
+                setLeaveList(res.data)
+                message.success('Leave is successfully removed.');
+            })
+            .catch(err => {
+                console.log(err);
                 message.error('Something went wrong. Try again.');
             });
     }
@@ -207,7 +221,7 @@ const LeaveAdmin = () => {
                     <div className="dropdown-menu dropdown-menu-right">
                         <a className="dropdown-item" href="#" data-toggle="modal" data-target="#edit_leave" onClick={() => setSelectedLeave(record)}><i
                             className="fa fa-pencil m-r-5"/> Edit</a>
-                        <a className="dropdown-item" href="#" data-toggle="modal" data-target="#delete_approve"><i
+                        <a className="dropdown-item" href="#" data-toggle="modal" data-target="#delete_approve" onClick={() => setSelectToDelete(record)}><i
                             className="fa fa-trash-o m-r-5"/> Delete</a>
                     </div>
                 </div>
@@ -544,10 +558,10 @@ const LeaveAdmin = () => {
                             <div className="modal-btn delete-action">
                                 <div className="row">
                                     <div className="col-6">
-                                        <a href="" className="btn btn-primary continue-btn">Delete</a>
+                                        <a href="#" className="btn btn-primary continue-btn" onClick={deleteLeave}>Delete</a>
                                     </div>
                                     <div className="col-6">
-                                        <a href="" data-dismiss="modal"
+                                        <a href="#" data-dismiss="modal"
                                            className="btn btn-primary cancel-btn">Cancel</a>
                                     </div>
                                 </div>
