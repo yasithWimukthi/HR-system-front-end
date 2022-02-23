@@ -85,6 +85,7 @@ const LeaveEmployee = () => {
                     numOfDays: '',
                     reason: ''
                 })
+                setLeaveList(res.data);
                 message.success('Leave is saved.');
             })
             .catch(err => {
@@ -112,6 +113,7 @@ const LeaveEmployee = () => {
                     numOfDays: '',
                     reason: ''
                 })
+                setLeaveList(res.data);
                 message.success('Leave is saved.');
             })
             .catch(err => {
@@ -318,19 +320,19 @@ const LeaveEmployee = () => {
             dataIndex: 'reason',
             sorter: (a, b) => a.reason.length - b.reason.length,
         },
-        // {
-        //     title: 'Status',
-        //     dataIndex: 'status',
-        //     render: (text, record) => (
-        //         <div className="action-label text-center">
-        //             <a className="btn btn-white btn-sm btn-rounded" href="">
-        //                 <i className={text === "New" ? "fa fa-dot-circle-o text-purple" : text === "Pending" ?
-        //                     "fa fa-dot-circle-o text-info" : text === "Approved" ? "fa fa-dot-circle-o text-success"
-        //                         : "fa fa-dot-circle-o text-danger"}/> {text}
-        //             </a>
-        //         </div>
-        //     ),
-        // },
+        {
+            title: 'Status',
+            dataIndex: 'status',
+            render: (text, record) => (
+                <div className="action-label text-center">
+                    <a className="btn btn-white btn-sm btn-rounded" href="">
+                        <i className={text === "New" ? "fa fa-dot-circle-o text-purple" : text === "Pending" ?
+                            "fa fa-dot-circle-o text-info" : text === "Approved" ? "fa fa-dot-circle-o text-success"
+                                : "fa fa-dot-circle-o text-danger"}/> {text}
+                    </a>
+                </div>
+            ),
+        },
         // {
         //     title: 'Approved By',
         //     dataIndex: 'name',
