@@ -1,187 +1,30 @@
 import React, {useState, useEffect} from 'react';
 import {Helmet} from "react-helmet";
 import {Link} from 'react-router-dom';
-import {
-    Avatar_09,
-    Avatar_02,
-    Avatar_03,
-    Avatar_05,
-    Avatar_08,
-    Avatar_10,
-    Avatar_15,
-    Avatar_20,
-    Avatar_24,
-    Avatar_25
-} from "../../../Entryfile/imagepath"
-
 import {message, Table} from 'antd';
 import 'antd/dist/antd.css';
 import {itemRender, onShowSizeChange} from "../../paginationfunction"
 import "../../antdstyle.css"
 import axios from "axios";
+import {DatePicker} from 'antd';
+import moment from "moment";
 
 const LeaveAdmin = () => {
+    const {RangePicker} = DatePicker;
+    const dateFormat = 'YYYY/MM/DD';
 
     const [leaveList, setLeaveList] = useState([])
-
-    const [data, setData] = useState([
-        {
-            id: 1,
-            image: Avatar_02,
-            name: "John Doe",
-            role: "Web Designer",
-            leavetype: "Medical Leave",
-            from: "27 Feb 2019",
-            to: '27 Feb 2019'
-            ,
-            noofdays: "1 day",
-            reason: "Going to Hospital",
-            status: "Approved"
-        },
-        {
-            id: 2,
-            image: Avatar_09,
-            name: "Buster Wigton",
-            role: "Web Developer",
-            leavetype: "Hospitalisation",
-            from: "15 Jan 2019",
-            to: '25 Jan 2019'
-            ,
-            noofdays: "10 days",
-            reason: "Going to Hospital",
-            status: "Approved"
-        },
-        {
-            id: 3,
-            image: Avatar_03,
-            name: "Catherine Manseau",
-            role: "Web Developer",
-            leavetype: "Maternity Leave",
-            from: "5 Jan 2019",
-            to: '15 Jan 2019'
-            ,
-            noofdays: "10 days",
-            reason: "Going to Hospital",
-            status: "Approved"
-        },
-        {
-            id: 4,
-            image: Avatar_05,
-            name: "Domenic Houston",
-            role: "Web Developer",
-            leavetype: "Casual Leave",
-            from: "10 Jan 2019",
-            to: '11 Jan 2019'
-            ,
-            noofdays: "2 days",
-            reason: "Going to Hospital",
-            status: "Approved"
-        },
-        {
-            id: 5,
-            image: Avatar_02,
-            name: "John Doe",
-            role: "Web Designer",
-            leavetype: "Casual Leave",
-            from: "9 Jan 2019",
-            to: '10 Jan 2019'
-            ,
-            noofdays: "2 days",
-            reason: "Going to Hospital",
-            status: "Approved"
-        },
-        {
-            id: 6,
-            image: Avatar_08,
-            name: "John Smith",
-            role: "Android Developer",
-            leavetype: "LOP",
-            from: "24 Feb 2019",
-            to: '25 Feb 2019'
-            ,
-            noofdays: "2 days",
-            reason: "Personnal",
-            status: "Approved"
-        },
-        {
-            id: 7,
-            image: Avatar_10,
-            name: "Melita Faucher",
-            role: "Web Developer",
-            leavetype: "Casual Leave",
-            from: "13 Jan 2019",
-            to: '14 Jan 2019'
-            ,
-            noofdays: "2 days",
-            reason: "Going to Hospital",
-            status: "Declined"
-        },
-        {
-            id: 8,
-            image: Avatar_15,
-            name: "Mike Litorus",
-            role: "IOS Developer",
-            leavetype: "Paternity Leave",
-            from: "13 Feb 2019",
-            to: '17 Feb 2019'
-            ,
-            noofdays: "5 days",
-            reason: "Going to Hospital",
-            status: "Declined"
-        },
-        {
-            id: 9,
-            image: Avatar_20,
-            name: "Richard Miles",
-            role: "Web Designer",
-            leavetype: "Casual Leave",
-            from: "8 Mar 2019",
-            to: '9 Mar 2019'
-            ,
-            noofdays: "2 days",
-            reason: "Going to Hospital",
-            status: "New"
-        },
-        {
-            id: 10,
-            image: Avatar_25,
-            name: "Richard Parker",
-            role: "Web Developer",
-            leavetype: "Casual Leave",
-            from: "30 Jan 2019",
-            to: '31 Jan 2019'
-            ,
-            noofdays: "2 days",
-            reason: "Personnal",
-            status: "New"
-        },
-        {
-            id: 11,
-            image: Avatar_10,
-            name: "Rolland Webber",
-            role: "Web Developer",
-            leavetype: "Casual Leave",
-            from: "7 Jan 2019",
-            to: '8 Jan 2019'
-            ,
-            noofdays: "2 days",
-            reason: "Going to Hospital",
-            status: "Declined"
-        },
-        {
-            id: 12,
-            image: Avatar_24,
-            name: "Tarah Shropshire",
-            role: "Web Developer",
-            leavetype: "Paternity Leave",
-            from: "10 Jan 2019",
-            to: '10 Jan 2019'
-            ,
-            noofdays: "1 day",
-            reason: "Going to Hospital",
-            status: "New"
-        },
-    ]);
+    const [selectedLeave,setSelectedLeave] = useState({
+        department: '',
+        designation: '',
+        name: '',
+        leaveApplyDate: '',
+        leaveDatesFrom: new Date(),
+        leaveDatesTo: new Date(),
+        numOfDays: '',
+        reason: '',
+        status: ''
+    });
 
     useEffect(() => {
         if ($('.select').length > 0) {
@@ -207,7 +50,6 @@ const LeaveAdmin = () => {
     }
 
     const onStatusChange = async (leave, status) => {
-        console.log({...leave, status})
         await axios.post(`http://127.0.0.1:8000/api/leaves/${leave.id}`, {
             ...leave,
             status
@@ -222,6 +64,31 @@ const LeaveAdmin = () => {
             });
     }
 
+    const editLeave = async e => {
+        e.preventDefault();
+        await axios.post(`http://127.0.0.1:8000/api/leaves/${selectedLeave.id}`, {
+            ...selectedLeave,
+            leaveDatesFrom: selectedLeave.leaveDatesFrom.toISOString().split('T')[0],
+            leaveDatesTo: selectedLeave.leaveDatesTo.toISOString().split('T')[0],
+            numOfDays: +selectedLeave.numOfDays
+        })
+            .then(res => {
+                setLeaveList(res.data)
+                message.success('Leave updated.');
+            })
+            .catch(err => {
+                console.log(err.message);
+                message.error('Something went wrong. Try again.');
+            });
+    }
+
+    const onLeaveDaysChange = val => {
+        setSelectedLeave({
+            ...selectedLeave,
+            leaveDatesFrom: val[0]._d,
+            leaveDatesTo: val[1]._d,
+        })
+    }
 
     const columns = [
         {
@@ -292,7 +159,7 @@ const LeaveAdmin = () => {
                     <a href="#" className="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i
                         className="material-icons">more_vert</i></a>
                     <div className="dropdown-menu dropdown-menu-right">
-                        <a className="dropdown-item" href="#" data-toggle="modal" data-target="#edit_leave"><i
+                        <a className="dropdown-item" href="#" data-toggle="modal" data-target="#edit_leave" onClick={() => setSelectedLeave(record)}><i
                             className="fa fa-pencil m-r-5"/> Edit</a>
                         <a className="dropdown-item" href="#" data-toggle="modal" data-target="#delete_approve"><i
                             className="fa fa-trash-o m-r-5"/> Delete</a>
@@ -408,7 +275,7 @@ const LeaveAdmin = () => {
 
                             <Table className="table-striped"
                                    pagination={{
-                                       total: data.length,
+                                       total: leaveList.length,
                                        showTotal: (total, range) => `Showing ${range[0]} to ${range[1]} of ${total} entries`,
                                        showSizeChanger: true, onShowSizeChange: onShowSizeChange, itemRender: itemRender
                                    }}
@@ -491,40 +358,71 @@ const LeaveAdmin = () => {
                         <div className="modal-body">
                             <form>
                                 <div className="form-group">
-                                    <label>Leave Type <span className="text-danger">*</span></label>
-                                    <select className="select">
-                                        <option>Select Leave Type</option>
-                                        <option>Casual Leave 12 Days</option>
-                                    </select>
+                                    <label>Department <span className="text-danger">*</span></label>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        value={selectedLeave.department}
+                                        onChange={e => setSelectedLeave({...selectedLeave, department: e.target.value})}
+                                    />
                                 </div>
                                 <div className="form-group">
-                                    <label>From <span className="text-danger">*</span></label>
-                                    <div>
-                                        <input className="form-control datetimepicker" defaultValue="01-01-2019"
-                                               type="date"/>
-                                    </div>
+                                    <label>Designation <span className="text-danger">*</span></label>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        value={selectedLeave.designation}
+                                        onChange={e => setSelectedLeave({...selectedLeave, designation: e.target.value})}
+                                    />
                                 </div>
                                 <div className="form-group">
-                                    <label>To <span className="text-danger">*</span></label>
-                                    <div>
-                                        <input className="form-control datetimepicker" defaultValue="01-01-2019"
-                                               type="date"/>
-                                    </div>
+                                    <label>Name <span className="text-danger">*</span></label>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        value={selectedLeave.name}
+                                        onChange={e => setSelectedLeave({...selectedLeave, name: e.target.value})}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Leave Apply Date <span className="text-danger">*</span></label>
+                                    <input
+                                        className="form-control"
+                                        type="date"
+                                        value={selectedLeave.leaveApplyDate}
+                                        onChange={e => setSelectedLeave({...selectedLeave, leaveApplyDate: e.target.value})}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Leave Days<span className="text-danger">*</span></label>
+                                    <RangePicker
+                                        style={{height: '44px', width: '100%'}}
+                                        value={[moment(selectedLeave.leaveDatesFrom, dateFormat), moment(selectedLeave.leaveDatesTo, dateFormat)]}
+                                        onChange={onLeaveDaysChange}
+                                    />
                                 </div>
                                 <div className="form-group">
                                     <label>Number of days <span className="text-danger">*</span></label>
-                                    <input className="form-control" readOnly type="text" defaultValue={2}/>
-                                </div>
-                                <div className="form-group">
-                                    <label>Remaining Leaves <span className="text-danger">*</span></label>
-                                    <input className="form-control" readOnly defaultValue={12} type="text"/>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        value={selectedLeave.numOfDays}
+                                        onChange={e => setSelectedLeave({...selectedLeave, numOfDays: e.target.value})}
+                                    />
                                 </div>
                                 <div className="form-group">
                                     <label>Leave Reason <span className="text-danger">*</span></label>
-                                    <textarea rows={4} className="form-control" defaultValue={"Going to hospital"}/>
+                                    <textarea
+                                        rows={4}
+                                        className="form-control"
+                                        value={selectedLeave.reason}
+                                        onChange={e => {
+                                            setSelectedLeave({...selectedLeave, reason: e.target.value})
+                                        }}
+                                    />
                                 </div>
                                 <div className="submit-section">
-                                    <button className="btn btn-primary submit-btn">Save</button>
+                                    <button className="btn btn-primary submit-btn" onClick={editLeave}>Save</button>
                                 </div>
                             </form>
                         </div>
