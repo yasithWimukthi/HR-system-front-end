@@ -25,6 +25,16 @@ const LeaveAdmin = () => {
         reason: '',
         status: ''
     });
+    const [leave, setLeave] = useState({
+        department: '',
+        designation: '',
+        name: '',
+        leaveApplyDate: '',
+        leaveDatesFrom: new Date(),
+        leaveDatesTo: new Date(),
+        numOfDays: '',
+        reason: ''
+    })
 
     useEffect(() => {
         if ($('.select').length > 0) {
@@ -64,6 +74,34 @@ const LeaveAdmin = () => {
             });
     }
 
+    const submitLeave = async e => {
+        e.preventDefault();
+        await axios.post(' http://127.0.0.1:8000/api/leaves/', {
+            ...leave,
+            leaveDatesFrom: leave.leaveDatesFrom.toISOString().split('T')[0],
+            leaveDatesTo: leave.leaveDatesTo.toISOString().split('T')[0],
+            numOfDays: +leave.numOfDays
+        })
+            .then(res => {
+                setLeave({
+                    department: '',
+                    designation: '',
+                    name: '',
+                    leaveApplyDate: '',
+                    leaveDatesFrom: new Date(),
+                    leaveDatesTo: new Date(),
+                    numOfDays: '',
+                    reason: ''
+                })
+                setLeaveList(res.data);
+                message.success('Leave is saved.');
+            })
+            .catch(err => {
+                console.log(err);
+                message.error('Something went wrong. Try again.');
+            });
+    }
+
     const editLeave = async e => {
         e.preventDefault();
         await axios.post(`http://127.0.0.1:8000/api/leaves/${selectedLeave.id}`, {
@@ -85,6 +123,14 @@ const LeaveAdmin = () => {
     const onLeaveDaysChange = val => {
         setSelectedLeave({
             ...selectedLeave,
+            leaveDatesFrom: val[0]._d,
+            leaveDatesTo: val[1]._d,
+        })
+    }
+
+    const onSubmitLeaveDaysChange = val => {
+        setLeave({
+            ...leave,
             leaveDatesFrom: val[0]._d,
             leaveDatesTo: val[1]._d,
         })
@@ -304,40 +350,71 @@ const LeaveAdmin = () => {
                         <div className="modal-body">
                             <form>
                                 <div className="form-group">
-                                    <label>Leave Type <span className="text-danger">*</span></label>
-                                    <select className="select">
-                                        <option>Select Leave Type</option>
-                                        <option>Casual Leave 12 Days</option>
-                                        <option>Medical Leave</option>
-                                        <option>Loss of Pay</option>
-                                    </select>
+                                    <label>Department <span className="text-danger">*</span></label>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        value={leave.department}
+                                        onChange={e => setLeave({...leave, department: e.target.value})}
+                                    />
                                 </div>
                                 <div className="form-group">
-                                    <label>From <span className="text-danger">*</span></label>
-                                    <div>
-                                        <input className="form-control datetimepicker" type="date"/>
-                                    </div>
+                                    <label>Designation <span className="text-danger">*</span></label>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        value={leave.designation}
+                                        onChange={e => setLeave({...leave, designation: e.target.value})}
+                                    />
                                 </div>
                                 <div className="form-group">
-                                    <label>To <span className="text-danger">*</span></label>
-                                    <div>
-                                        <input className="form-control datetimepicker" type="date"/>
-                                    </div>
+                                    <label>Name <span className="text-danger">*</span></label>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        value={leave.name}
+                                        onChange={e => setLeave({...leave, name: e.target.value})}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Leave Apply Date <span className="text-danger">*</span></label>
+                                    <input
+                                        className="form-control"
+                                        type="date"
+                                        value={leave.leaveApplyDate}
+                                        onChange={e => setLeave({...leave, leaveApplyDate: e.target.value})}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Leave Days<span className="text-danger">*</span></label>
+                                    <RangePicker
+                                        style={{height: '44px', width: '100%'}}
+                                        //value={[moment(leave.leaveDatesFrom, dateFormat), moment(leave.leaveDatesTo, dateFormat)]}
+                                        onChange={onSubmitLeaveDaysChange}
+                                    />
                                 </div>
                                 <div className="form-group">
                                     <label>Number of days <span className="text-danger">*</span></label>
-                                    <input className="form-control" readOnly type="text"/>
-                                </div>
-                                <div className="form-group">
-                                    <label>Remaining Leaves <span className="text-danger">*</span></label>
-                                    <input className="form-control" readOnly defaultValue={12} type="text"/>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        value={leave.numOfDays}
+                                        onChange={e => setLeave({...leave, numOfDays: e.target.value})}
+                                    />
                                 </div>
                                 <div className="form-group">
                                     <label>Leave Reason <span className="text-danger">*</span></label>
-                                    <textarea rows={4} className="form-control" defaultValue={""}/>
+                                    <textarea
+                                        rows={4}
+                                        className="form-control"
+                                        value={leave.reason}
+                                        onChange={e => {
+                                            setLeave({...leave, reason: e.target.value})
+                                        }}
+                                    />
                                 </div>
                                 <div className="submit-section">
-                                    <button className="btn btn-primary submit-btn">Submit</button>
+                                    <button className="btn btn-primary submit-btn" onClick={submitLeave}>Submit</button>
                                 </div>
                             </form>
                         </div>
