@@ -7,7 +7,7 @@ import {Checkbox, message} from 'antd';
 const LeaveSettings = () => {
 
     const options = [
-        { value: 'January', label: 'January' },
+        {value: 'January', label: 'January'},
         {value: 'February', label: 'February'},
         {value: 'March', label: 'March'},
         {value: 'April', label: 'April'},
@@ -24,9 +24,9 @@ const LeaveSettings = () => {
     const [leaveList, setLeaveList] = useState([]);
     const [selectedLeave, setSelectedLeave] = useState({
         leave_name: '',
-        country:'',
+        country: '',
         relevant_days: '',
-        joined_month:''
+        joined_month: ''
     });
 
     useEffect(() => {
@@ -34,13 +34,13 @@ const LeaveSettings = () => {
     }, []);
 
     const getLeaves = async () => {
-        const res = await axios.get(' http://127.0.0.1:8000/api/leaves-setting/');
+        const res = await axios.get(' http://127.0.0.1:8000/api/leaveSettings/');
         setLeaveList(res.data);
     }
 
     const saveLeaveSetting = async e => {
         e.preventDefault();
-        await axios.post(`http://127.0.0.1:8000/api/leave-settings/${selectedLeave.id}`, selectedLeave)
+        await axios.post(`http://127.0.0.1:8000/api/leaveSettings/${selectedLeave.id}`, selectedLeave)
             .then(res => {
                 setLeaveList(res.data);
                 message.success('Holiday is successfully edited.');
@@ -51,7 +51,7 @@ const LeaveSettings = () => {
             });
     }
 
-    const  onChange = (checkedValues) => {
+    const onChange = (checkedValues) => {
         console.log(checkedValues.toString());
         setSelectedLeave({...selectedLeave, joined_month: checkedValues.toString()});
     }
@@ -95,9 +95,9 @@ const LeaveSettings = () => {
                                 </thead>
                                 <tbody>
                                 {
-                                    leaveList && leaveList.length > 0 && leaveList.map((leave,index)=>(
+                                    leaveList && leaveList.length > 0 && leaveList.map((leave, index) => (
                                         <tr key={index}>
-                                            <td>{index+1}</td>
+                                            <td>{index + 1}</td>
                                             <td>{leave.country}</td>
                                             <td>{leave.leave_name}</td>
                                             <td>{leave.relevant_days}</td>
@@ -111,11 +111,11 @@ const LeaveSettings = () => {
                                                         <a className="dropdown-item" href="#" data-toggle="modal"
                                                            data-target="#edit_leave_type"
                                                            onClick={() => setSelectedLeave(leave)}
-                                                           ><i
+                                                        ><i
                                                             className="fa fa-pencil m-r-5"/> Edit</a>
                                                         <a className="dropdown-item" href="#" data-toggle="modal"
                                                            data-target="#delete_company"
-                                                           ><i
+                                                        ><i
                                                             className="fa fa-trash-o m-r-5"/> Delete</a>
                                                     </div>
                                                 </div>
@@ -146,7 +146,7 @@ const LeaveSettings = () => {
                                     <input
                                         className="form-control"
                                         value={selectedLeave.leave_name}
-                                        onChange={e => setSelectedLeave({...selectedLeave,leave_name:e.target.value})}
+                                        onChange={e => setSelectedLeave({...selectedLeave, leave_name: e.target.value})}
                                         type="text"/>
                                 </div>
                                 <div className="form-group">
@@ -155,7 +155,10 @@ const LeaveSettings = () => {
                                         <input
                                             className="form-control"
                                             value={selectedLeave.relevant_days}
-                                            onChange={(e) => setSelectedLeave({...selectedLeave, relevant_days: e.target.value})}
+                                            onChange={(e) => setSelectedLeave({
+                                                ...selectedLeave,
+                                                relevant_days: e.target.value
+                                            })}
                                             type="text"
                                         />
                                     </div>
@@ -164,11 +167,13 @@ const LeaveSettings = () => {
                                     <label>Joined Month <span className="text-danger">*</span></label>
                                     <Checkbox.Group
                                         options={options}
+                                        value={selectedLeave.joined_month.toString().split(',')}
                                         onChange={onChange}
                                     />
                                 </div>
                                 <div className="submit-section">
-                                    <button type="submit" data-dismiss="modal" className="btn btn-primary submit-btn" onClick={saveLeaveSetting}>Save
+                                    <button type="submit" data-dismiss="modal" className="btn btn-primary submit-btn"
+                                            onClick={saveLeaveSetting}>Save
                                     </button>
                                 </div>
                             </form>
