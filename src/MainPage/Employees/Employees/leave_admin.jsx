@@ -36,6 +36,13 @@ const LeaveAdmin = () => {
         reason: ''
     })
     const[selectToDelete,setSelectToDelete] = useState({})
+    const [searchQuery,setSearchQuery] = useState({
+        name:'',
+        type:'',
+        status:'',
+        from:'',
+        to:''
+    })
 
     useEffect(() => {
         if ($('.select').length > 0) {
@@ -286,7 +293,7 @@ const LeaveAdmin = () => {
                 <div className="row filter-row">
                     <div className="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
                         <div className="form-group form-focus">
-                            <input type="text" className="form-control floating"/>
+                            <input type="text" className="form-control floating" onChange={(e) => setSearchQuery({...searchQuery,name: e.target.value})}/>
                             <label className="focus-label">Employee Name</label>
                         </div>
                     </div>
