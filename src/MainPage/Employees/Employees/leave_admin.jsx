@@ -8,6 +8,7 @@ import "../../antdstyle.css"
 import axios from "axios";
 import {DatePicker} from 'antd';
 import moment from "moment";
+import Select from "react-select";
 
 const LeaveAdmin = () => {
     const {RangePicker} = DatePicker;
@@ -38,7 +39,6 @@ const LeaveAdmin = () => {
     const[selectToDelete,setSelectToDelete] = useState({})
     const [searchQuery,setSearchQuery] = useState({
         name:'',
-        type:'',
         status:'',
         from:'',
         to:''
@@ -141,6 +141,11 @@ const LeaveAdmin = () => {
             });
     }
 
+    const onSearchClicked = async e => {
+        e.preventDefault();
+        console.log(searchQuery)
+    }
+
     const onLeaveDaysChange = val => {
         setSelectedLeave({
             ...selectedLeave,
@@ -156,6 +161,20 @@ const LeaveAdmin = () => {
             leaveDatesTo: val[1]._d,
         })
     }
+
+    const handleStatusChange = status => {
+        setSearchQuery({
+            ...searchQuery,
+            status: status.value
+        })
+    }
+
+    const statusOptions = [
+        { value: 'New', label: 'New' },
+        { value: 'Pending', label: 'Pending' },
+        { value: 'Approved', label: 'Approved' },
+        { value: 'Declined', label: 'Declined<' }
+    ]
 
     const columns = [
         {
@@ -297,42 +316,36 @@ const LeaveAdmin = () => {
                             <label className="focus-label">Employee Name</label>
                         </div>
                     </div>
+                    {/*<div className="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">*/}
+                    {/*    <div className="form-group form-focus select-focus">*/}
+                    {/*        <select className="select floating">*/}
+                    {/*            <option> -- Select --</option>*/}
+                    {/*            <option>Casual Leave</option>*/}
+                    {/*            <option>Medical Leave</option>*/}
+                    {/*            <option>Loss of Pay</option>*/}
+                    {/*        </select>*/}
+                    {/*        <label className="focus-label">Leave Type</label>*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
                     <div className="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
-                        <div className="form-group form-focus select-focus">
-                            <select className="select floating">
-                                <option> -- Select --</option>
-                                <option>Casual Leave</option>
-                                <option>Medical Leave</option>
-                                <option>Loss of Pay</option>
-                            </select>
-                            <label className="focus-label">Leave Type</label>
+                        <div >
+                            <Select options={statusOptions} style={{minHeight:'50px'}} onChange={handleStatusChange}/>
                         </div>
                     </div>
                     <div className="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
                         <div className="form-group form-focus select-focus">
-                            <select className="select floating">
-                                <option> -- Select --</option>
-                                <option> Pending</option>
-                                <option> Approved</option>
-                                <option> Rejected</option>
-                            </select>
-                            <label className="focus-label">Leave Status</label>
-                        </div>
-                    </div>
-                    <div className="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
-                        <div className="form-group form-focus select-focus">
-                            <input className="form-control floating" type="date"/>
+                            <input className="form-control floating" type="date" onChange={e => setSearchQuery({...searchQuery,from: e.target.value})}/>
                             <label className="focus-label">From</label>
                         </div>
                     </div>
                     <div className="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
                         <div className="form-group form-focus select-focus">
-                            <input className="form-control floating" type="date"/>
+                            <input className="form-control floating" type="date" onChange={e => setSearchQuery({...searchQuery,to: e.target.value})}/>
                             <label className="focus-label">To</label>
                         </div>
                     </div>
                     <div className="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
-                        <a href="#" className="btn btn-success btn-block"> Search </a>
+                        <a href="#" className="btn btn-success btn-block" onClick={onSearchClicked}> Search </a>
                     </div>
                 </div>
                 {/* /Search Filter */}
