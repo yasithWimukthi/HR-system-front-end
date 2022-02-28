@@ -164,29 +164,16 @@ const LeaveAdmin = () => {
             ...searchQuery,
             status: status.value
         })
-        // const filteredList = leaveList.filter(leave => {
-        //     return leave.status === status.value
-        // })
-        // setLeaveList(filteredList);
     }
 
     /** filter leaves on name*/
     const searchOnName = e => {
         setSearchQuery({...searchQuery,name: e.target.value})
-
-        // const filteredList = leaveList.filter(leave => {
-        //     return leave.name.toLowerCase().includes(e.target.value.toLowerCase());
-        // })
-        // setLeaveList(filteredList);
     }
 
     /** filter leaves on start date*/
     const searchOnLeaveStartDate = e => {
         setSearchQuery({...searchQuery,from: e.target.value});
-        // const filteredList = leaveList.filter(leave => {
-        //     return leave.leaveDatesFrom === e.target.value;
-        // })
-        // setLeaveList(filteredList);
     }
 
     /** filter leaves on end date*/
@@ -209,24 +196,21 @@ const LeaveAdmin = () => {
                         return leave.name.toLowerCase().includes(searchQuery.name.toLowerCase());
                     })
 
-                    // setLeaveList(leaveList.filter(leave => {
-                    //     return leave.name.toLowerCase().includes(searchQuery.name.toLowerCase());
-                    // }))
                 }
                 if (searchQuery.status !== ''){
-                    // filteredList = filteredList.filter(leave => {
-                    //     return leave.status === searchQuery.status;
-                    // })
+                    filteredList = filteredList.filter(leave => {
+                        return leave.status === searchQuery.status;
+                    })
                 }
                 if (searchQuery.from !== ''){
-                    // filteredList =  filteredList.filter(leave => {
-                    //     return leave.leaveDatesFrom === searchQuery.from;
-                    // })
+                    filteredList =  filteredList.filter(leave => {
+                        return leave.leaveDatesFrom === searchQuery.from;
+                    })
                 }
                 if (searchQuery.to !== ''){
-                    // filteredList = filteredList.filter(leave => {
-                    //     return leave.leaveDatesTo === searchQuery.to;
-                    // })
+                    filteredList = filteredList.filter(leave => {
+                        return leave.leaveDatesTo === searchQuery.to;
+                    })
                 }
                 setLeaveList(filteredList);
             })
@@ -239,19 +223,19 @@ const LeaveAdmin = () => {
         { value: 'New', label: 'New' },
         { value: 'Pending', label: 'Pending' },
         { value: 'Approved', label: 'Approved' },
-        { value: 'Declined', label: 'Declined<' }
+        { value: 'Declined', label: 'Declined' }
     ]
 
     const columns = [
         {
             title: 'Employee',
             dataIndex: 'name',
-            sorter: (a, b) => a.name.length - b.name.length,
+            sorter: (a, b) => a.name < b.name,
         },
         {
             title: 'Department',
             dataIndex: 'department',
-            sorter: (a, b) => a.leavetype.length - b.leavetype.length,
+            sorter: (a, b) => a.department < b.department,
         },
 
         {
@@ -395,7 +379,7 @@ const LeaveAdmin = () => {
                     {/*</div>*/}
                     <div className="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
                         <div >
-                            <Select options={statusOptions} style={{minHeight:'50px'}} onChange={handleStatusChange}/>
+                            <Select options={statusOptions} style={{minHeight:'50px',zIndex:'100'}} onChange={handleStatusChange}/>
                         </div>
                     </div>
                     <div className="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
@@ -425,7 +409,7 @@ const LeaveAdmin = () => {
                                        showTotal: (total, range) => `Showing ${range[0]} to ${range[1]} of ${total} entries`,
                                        showSizeChanger: true, onShowSizeChange: onShowSizeChange, itemRender: itemRender
                                    }}
-                                   style={{overflowX: 'auto'}}
+                                   style={{overflowX: 'auto',zIndex:'0'}}
                                    columns={columns}
                                 // bordered
                                    dataSource={leaveList}
