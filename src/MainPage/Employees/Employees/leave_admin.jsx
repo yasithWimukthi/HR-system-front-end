@@ -141,10 +141,6 @@ const LeaveAdmin = () => {
             });
     }
 
-    const onSearchClicked = async e => {
-        e.preventDefault();
-        console.log(searchQuery)
-    }
 
     const onLeaveDaysChange = val => {
         setSelectedLeave({
@@ -162,11 +158,31 @@ const LeaveAdmin = () => {
         })
     }
 
+    /** filter leaves on status*/
     const handleStatusChange = status => {
         setSearchQuery({
             ...searchQuery,
             status: status.value
         })
+        const filteredList = leaveList.filter(leave => {
+            return leave.status === status.value
+        })
+        setLeaveList(filteredList);
+    }
+
+    /** filter leaves on name*/
+    const searchOnName = e => {
+        setSearchQuery({...searchQuery,from: e.target.value})
+
+        const filteredList = leaveList.filter(leave => {
+            return leave.name.toLowerCase().includes(e.target.value.toLowerCase());
+        })
+        setLeaveList(filteredList);
+    }
+
+    /** filter leaves on start date*/
+    const searchOnLeaveStartDate = e => {
+
     }
 
     const statusOptions = [
@@ -312,7 +328,7 @@ const LeaveAdmin = () => {
                 <div className="row filter-row">
                     <div className="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
                         <div className="form-group form-focus">
-                            <input type="text" className="form-control floating" onChange={(e) => setSearchQuery({...searchQuery,name: e.target.value})}/>
+                            <input type="text" className="form-control floating" onChange={searchOnName}/>
                             <label className="focus-label">Employee Name</label>
                         </div>
                     </div>
@@ -345,7 +361,7 @@ const LeaveAdmin = () => {
                         </div>
                     </div>
                     <div className="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
-                        <a href="#" className="btn btn-success btn-block" onClick={onSearchClicked}> Search </a>
+                        <a href="#" className="btn btn-success btn-block"> Search </a>
                     </div>
                 </div>
                 {/* /Search Filter */}
