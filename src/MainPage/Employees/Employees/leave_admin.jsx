@@ -164,25 +164,75 @@ const LeaveAdmin = () => {
             ...searchQuery,
             status: status.value
         })
-        const filteredList = leaveList.filter(leave => {
-            return leave.status === status.value
-        })
-        setLeaveList(filteredList);
+        // const filteredList = leaveList.filter(leave => {
+        //     return leave.status === status.value
+        // })
+        // setLeaveList(filteredList);
     }
 
     /** filter leaves on name*/
     const searchOnName = e => {
-        setSearchQuery({...searchQuery,from: e.target.value})
+        setSearchQuery({...searchQuery,name: e.target.value})
 
-        const filteredList = leaveList.filter(leave => {
-            return leave.name.toLowerCase().includes(e.target.value.toLowerCase());
-        })
-        setLeaveList(filteredList);
+        // const filteredList = leaveList.filter(leave => {
+        //     return leave.name.toLowerCase().includes(e.target.value.toLowerCase());
+        // })
+        // setLeaveList(filteredList);
     }
 
     /** filter leaves on start date*/
     const searchOnLeaveStartDate = e => {
+        setSearchQuery({...searchQuery,from: e.target.value});
+        // const filteredList = leaveList.filter(leave => {
+        //     return leave.leaveDatesFrom === e.target.value;
+        // })
+        // setLeaveList(filteredList);
+    }
 
+    /** filter leaves on end date*/
+    const searchOnLeaveEndDate = e => {
+        setSearchQuery({...searchQuery,to: e.target.value})
+    }
+
+    /** search button click handler*/
+
+    const onSearchHandler = async e => {
+        e.preventDefault();
+        console.log(searchQuery);
+
+        await axios.get(' http://127.0.0.1:8000/api/leaves/')
+            .then(res => {
+                let filteredList =res.data;
+                if (searchQuery.name !== ''){
+                    console.log('inside if name')
+                    filteredList = filteredList.filter(leave => {
+                        return leave.name.toLowerCase().includes(searchQuery.name.toLowerCase());
+                    })
+
+                    // setLeaveList(leaveList.filter(leave => {
+                    //     return leave.name.toLowerCase().includes(searchQuery.name.toLowerCase());
+                    // }))
+                }
+                if (searchQuery.status !== ''){
+                    // filteredList = filteredList.filter(leave => {
+                    //     return leave.status === searchQuery.status;
+                    // })
+                }
+                if (searchQuery.from !== ''){
+                    // filteredList =  filteredList.filter(leave => {
+                    //     return leave.leaveDatesFrom === searchQuery.from;
+                    // })
+                }
+                if (searchQuery.to !== ''){
+                    // filteredList = filteredList.filter(leave => {
+                    //     return leave.leaveDatesTo === searchQuery.to;
+                    // })
+                }
+                setLeaveList(filteredList);
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
 
     const statusOptions = [
@@ -350,18 +400,18 @@ const LeaveAdmin = () => {
                     </div>
                     <div className="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
                         <div className="form-group form-focus select-focus">
-                            <input className="form-control floating" type="date" onChange={e => setSearchQuery({...searchQuery,from: e.target.value})}/>
+                            <input className="form-control floating" type="date" onChange={searchOnLeaveStartDate}/>
                             <label className="focus-label">From</label>
                         </div>
                     </div>
                     <div className="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
                         <div className="form-group form-focus select-focus">
-                            <input className="form-control floating" type="date" onChange={e => setSearchQuery({...searchQuery,to: e.target.value})}/>
+                            <input className="form-control floating" type="date" onChange={searchOnLeaveEndDate}/>
                             <label className="focus-label">To</label>
                         </div>
                     </div>
                     <div className="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
-                        <a href="#" className="btn btn-success btn-block"> Search </a>
+                        <a href="#" className="btn btn-success btn-block" onClick={onSearchHandler}> Search </a>
                     </div>
                 </div>
                 {/* /Search Filter */}
