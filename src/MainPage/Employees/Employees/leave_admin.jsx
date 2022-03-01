@@ -628,7 +628,7 @@ const LeaveAdmin = () => {
                             <div className="modal-btn delete-action">
                                 <div className="row">
                                     <div className="col-6">
-                                        <a href="#" className="btn btn-primary continue-btn" onClick={deleteLeave}>Delete</a>
+                                        <a href="#" data-dismiss="modal" className="btn btn-primary continue-btn" onClick={deleteLeave}>Delete</a>
                                     </div>
                                     <div className="col-6">
                                         <a href="#" data-dismiss="modal"
