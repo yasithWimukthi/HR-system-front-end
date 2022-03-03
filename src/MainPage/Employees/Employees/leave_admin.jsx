@@ -583,7 +583,7 @@ const LeaveAdmin = () => {
                                     />
                                 </div>
                                 <div className="submit-section">
-                                    <button className="btn btn-primary submit-btn" onClick={editLeave}>Save</button>
+                                    <button className="btn btn-primary submit-btn" data-dismiss="modal" onClick={editLeave}>Save</button>
                                 </div>
                             </form>
                         </div>
