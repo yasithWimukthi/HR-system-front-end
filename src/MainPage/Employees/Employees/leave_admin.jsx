@@ -114,8 +114,8 @@ const LeaveAdmin = () => {
         e.preventDefault();
         await axios.post(`http://127.0.0.1:8000/api/leaves/${selectedLeave.id}`, {
             ...selectedLeave,
-            leaveDatesFrom: selectedLeave.leaveDatesFrom.toISOString().split('T')[0],
-            leaveDatesTo: selectedLeave.leaveDatesTo.toISOString().split('T')[0],
+            leaveDatesFrom: new Date(selectedLeave.leaveDatesFrom).toISOString().split('T')[0],
+            leaveDatesTo: new Date(selectedLeave.leaveDatesTo).toISOString().split('T')[0],
             numOfDays: +selectedLeave.numOfDays
         })
             .then(res => {
@@ -558,7 +558,7 @@ const LeaveAdmin = () => {
                                     <label>Leave Days<span className="text-danger">*</span></label>
                                     <RangePicker
                                         style={{height: '44px', width: '100%'}}
-                                        value={[moment(selectedLeave.leaveDatesFrom, dateFormat), moment(selectedLeave.leaveDatesTo, dateFormat)]}
+                                        defaultValue={[moment(selectedLeave.leaveDatesFrom, dateFormat), moment(selectedLeave.leaveDatesTo, dateFormat)]}
                                         onChange={onLeaveDaysChange}
                                     />
                                 </div>
