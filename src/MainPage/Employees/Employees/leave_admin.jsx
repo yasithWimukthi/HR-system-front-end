@@ -498,7 +498,12 @@ const LeaveAdmin = () => {
                                     />
                                 </div>
                                 <div className="submit-section">
-                                    <button className="btn btn-primary submit-btn" onClick={submitLeave}>Submit</button>
+                                    <button
+                                        className="btn btn-primary submit-btn"
+                                        onClick={submitLeave}
+                                        data-dismiss="modal"
+                                    >
+                                        Submit</button>
                                 </div>
                             </form>
                         </div>
