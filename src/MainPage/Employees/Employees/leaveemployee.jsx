@@ -462,7 +462,12 @@ const LeaveEmployee = () => {
                                     />
                                 </div>
                                 <div className="submit-section">
-                                    <button className="btn btn-primary submit-btn" onClick={editLeave}>Submit</button>
+                                    <button
+                                        className="btn btn-primary submit-btn"
+                                        onClick={editLeave}
+                                        data-dismiss="modal"
+                                    >
+                                        Submit</button>
                                 </div>
                             </form>
                         </div>
